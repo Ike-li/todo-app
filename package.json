@@ -25,6 +25,10 @@
       "bcrypt",
       "prisma",
       "unrs-resolver"
-    ]
+    ],
+    "overrides": {
+      "postcss": ">=8.5.10",
+      "@tootallnate/once": ">=3.0.1"
+    }
   }
 }
