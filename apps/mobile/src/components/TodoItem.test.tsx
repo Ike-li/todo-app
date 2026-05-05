@@ -7,6 +7,11 @@ const mockTodo = {
   title: "Test Todo",
   description: "Test Description",
   completed: false,
+  priority: "NONE" as const,
+  dueDate: null,
+  position: 0,
+  userId: "user-1",
+  categoryId: null,
   createdAt: "2024-01-01T00:00:00.000Z",
   updatedAt: "2024-01-01T00:00:00.000Z",
 };

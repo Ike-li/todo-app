@@ -10,6 +10,8 @@ import {
   toggleTodo as toggleTodoApi,
   deleteTodo as deleteTodoApi,
   updateTodo as updateTodoApi,
+  fetchSubTasks,
+  createSubTask,
 } from "../services/todo.service";
 import type { TodoCreate, TodoUpdate, TodoResponse } from "@todo-app/shared";
 
@@ -91,6 +93,37 @@ export function useTodos(page = 1, limit = 20) {
     deleteTodo,
     updateTodo,
   };
+}
+
+export function useSubTasks(parentId: string | undefined) {
+  const queryClient = useQueryClient();
+
+  const subTasksQuery = useQuery({
+    queryKey: ["todos", "subtasks", parentId],
+    queryFn: () => fetchSubTasks(parentId!),
+    enabled: !!parentId,
+  });
+
+  const addSubTask = useMutation({
+    mutationFn: (input: Omit<TodoCreate, "parentId">) =>
+      createSubTask(parentId!, input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: ["todos", "subtasks", parentId] });
+    },
+  });
+
+  return { subTasksQuery, addSubTask };
+}
+
+export function useAllTodos() {
+  return useQuery({
+    queryKey: ["todos", "all"],
+    queryFn: async () => {
+      const result = await fetchTodos(1, 100);
+      return result.data;
+    },
+  });
 }
 
 export function useTodo(id: string) {

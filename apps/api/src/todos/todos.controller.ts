@@ -38,6 +38,14 @@ export class TodosController {
     return this.todosService.findAll(req.user.sub, query);
   }
 
+  @Get(':id/subtasks')
+  async getSubTasks(
+    @Req() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.todosService.getSubTasks(req.user.sub, id);
+  }
+
   @Get(':id')
   async findOne(@Req() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.todosService.findOne(req.user.sub, id);

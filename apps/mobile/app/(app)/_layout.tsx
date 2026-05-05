@@ -25,6 +25,7 @@ export default function AppLayout() {
           <Appbar.Header>
             {back && <Appbar.BackAction onPress={() => router.back()} />}
             <Appbar.Content title={options.title || "TODO App"} />
+            <Appbar.Action icon="account-circle" onPress={() => router.push("/(app)/profile")} />
             <Appbar.Action icon="logout" onPress={handleLogout} />
           </Appbar.Header>
         ),
@@ -41,6 +42,10 @@ export default function AppLayout() {
       <Stack.Screen
         name="[id]"
         options={{ title: "Todo Details" }}
+      />
+      <Stack.Screen
+        name="profile"
+        options={{ title: "Profile" }}
       />
     </Stack>
   );

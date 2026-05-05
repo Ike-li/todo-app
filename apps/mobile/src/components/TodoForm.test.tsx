@@ -50,6 +50,10 @@ describe("TodoForm", () => {
       expect(onSubmit).toHaveBeenCalledWith({
         title: "New Todo",
         description: "New Description",
+        priority: undefined,
+        dueDate: undefined,
+        categoryId: undefined,
+        tags: undefined,
       });
     });
   });
@@ -67,6 +71,10 @@ describe("TodoForm", () => {
       expect(onSubmit).toHaveBeenCalledWith({
         title: "New Todo",
         description: undefined,
+        priority: undefined,
+        dueDate: undefined,
+        categoryId: undefined,
+        tags: undefined,
       });
     });
   });
