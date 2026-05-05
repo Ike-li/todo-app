@@ -13,6 +13,7 @@ import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { QueryTodoDto } from './dto/query-todo.dto';
+import { ReorderTodosDto } from './dto/reorder-todo.dto';
 
 describe('TodosService', () => {
   let service: TodosService;
@@ -261,6 +262,42 @@ describe('TodosService', () => {
         where: { id: 'todo-1' },
       });
       expect(result).toEqual(mockTodo);
+    });
+  });
+
+  describe('reorder', () => {
+    it('should update positions in a transaction', async () => {
+      const dto: ReorderTodosDto = {
+        items: [
+          { id: 'todo-1', position: 0 },
+          { id: 'todo-2', position: 1 },
+        ],
+      };
+
+      const updatedTodos = [
+        { ...mockTodo, id: 'todo-1', position: 0 },
+        { ...mockTodo, id: 'todo-2', position: 1 },
+      ];
+
+      prisma.todo.update
+        .mockResolvedValueOnce(updatedTodos[0])
+        .mockResolvedValueOnce(updatedTodos[1]);
+      prisma.$transaction.mockImplementation((promises: Promise<unknown>[]) =>
+        Promise.all(promises),
+      );
+
+      const result = await service.reorder(userId, dto);
+
+      expect(prisma.$transaction).toHaveBeenCalled();
+      expect(prisma.todo.update).toHaveBeenCalledWith({
+        where: { id: 'todo-1', userId },
+        data: { position: 0 },
+      });
+      expect(prisma.todo.update).toHaveBeenCalledWith({
+        where: { id: 'todo-2', userId },
+        data: { position: 1 },
+      });
+      expect(result).toHaveLength(2);
     });
   });
 });

@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { QueryTodoDto } from './dto/query-todo.dto';
+import { ReorderTodosDto } from './dto/reorder-todo.dto';
 
 export interface PaginatedResult<T> {
   data: T[];
@@ -182,6 +183,17 @@ export class TodosService {
     return this.prisma.todo.delete({
       where: { id },
     });
+  }
+
+  async reorder(userId: string, dto: ReorderTodosDto): Promise<Todo[]> {
+    const updatePromises = dto.items.map((item) =>
+      this.prisma.todo.update({
+        where: { id: item.id, userId },
+        data: { position: item.position },
+      }),
+    );
+
+    return this.prisma.$transaction(updatePromises);
   }
 
   /**

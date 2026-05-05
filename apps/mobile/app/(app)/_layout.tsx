@@ -47,6 +47,14 @@ export default function AppLayout() {
         name="profile"
         options={{ title: "Profile" }}
       />
+      <Stack.Screen
+        name="categories"
+        options={{ title: "Categories" }}
+      />
+      <Stack.Screen
+        name="tags"
+        options={{ title: "Tags" }}
+      />
     </Stack>
   );
 }

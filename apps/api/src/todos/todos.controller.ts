@@ -18,6 +18,7 @@ import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { QueryTodoDto } from './dto/query-todo.dto';
+import { ReorderTodosDto } from './dto/reorder-todo.dto';
 
 interface RequestWithUser extends Request {
   user: { sub: string };
@@ -49,6 +50,11 @@ export class TodosController {
   @Get(':id')
   async findOne(@Req() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.todosService.findOne(req.user.sub, id);
+  }
+
+  @Patch('reorder')
+  async reorder(@Req() req: RequestWithUser, @Body() dto: ReorderTodosDto) {
+    return this.todosService.reorder(req.user.sub, dto);
   }
 
   @Patch(':id')

@@ -13,12 +13,16 @@ export default function TodoListScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
   const router = useRouter();
-  const { todosQuery, toggleTodo, deleteTodo } = useTodos();
+  const { todosQuery, toggleTodo, deleteTodo, reorderTodos } = useTodos();
 
   const todos = todosQuery.data?.data || [];
   const isRefreshing = todosQuery.isFetching && !todosQuery.isLoading;
 
-  const filteredTodos = todos.filter((todo: TodoResponse) => {
+  const sortedTodos = [...todos].sort(
+    (a: TodoResponse, b: TodoResponse) => (a.position ?? 0) - (b.position ?? 0)
+  );
+
+  const filteredTodos = sortedTodos.filter((todo: TodoResponse) => {
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -57,6 +61,32 @@ export default function TodoListScreen() {
   const handleCreate = useCallback(() => {
     router.push("/(app)/create");
   }, [router]);
+
+  const handleMoveUp = useCallback(
+    (index: number) => {
+      if (index <= 0) return;
+      const prev = filteredTodos[index - 1];
+      const curr = filteredTodos[index];
+      reorderTodos.mutate([
+        { id: curr.id, position: prev.position ?? index - 1 },
+        { id: prev.id, position: curr.position ?? index },
+      ]);
+    },
+    [filteredTodos, reorderTodos]
+  );
+
+  const handleMoveDown = useCallback(
+    (index: number) => {
+      if (index >= filteredTodos.length - 1) return;
+      const curr = filteredTodos[index];
+      const next = filteredTodos[index + 1];
+      reorderTodos.mutate([
+        { id: curr.id, position: next.position ?? index + 1 },
+        { id: next.id, position: curr.position ?? index },
+      ]);
+    },
+    [filteredTodos, reorderTodos]
+  );
 
   if (todosQuery.isLoading) {
     return <LoadingSpinner message="Loading your todos..." />;
@@ -101,11 +131,13 @@ export default function TodoListScreen() {
         <FlatList
           data={filteredTodos}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <TodoItem
               todo={item}
               onToggle={handleToggle}
               onPress={handlePress}
+              onMoveUp={index > 0 ? () => handleMoveUp(index) : undefined}
+              onMoveDown={index < filteredTodos.length - 1 ? () => handleMoveDown(index) : undefined}
               testID={`todo-item-${item.id}`}
             />
           )}

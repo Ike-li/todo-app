@@ -21,10 +21,12 @@ interface TodoItemProps {
   todo: TodoResponse;
   onToggle: (id: string) => void;
   onPress: (id: string) => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
   testID?: string;
 }
 
-export function TodoItem({ todo, onToggle, onPress, testID }: TodoItemProps) {
+export function TodoItem({ todo, onToggle, onPress, onMoveUp, onMoveDown, testID }: TodoItemProps) {
   const { colors } = useTheme();
   const iconColor = colors.onSurfaceVariant;
   const titleStyle = todo.completed
@@ -112,6 +114,30 @@ export function TodoItem({ todo, onToggle, onPress, testID }: TodoItemProps) {
           onPress={() => onToggle(todo.id)}
         />
       )}
+      right={() =>
+        onMoveUp || onMoveDown ? (
+          <View style={styles.reorderButtons}>
+            {onMoveUp ? (
+              <Icon
+                source="chevron-up"
+                size={20}
+                color={iconColor}
+                onPress={onMoveUp}
+                testID="move-up"
+              />
+            ) : null}
+            {onMoveDown ? (
+              <Icon
+                source="chevron-down"
+                size={20}
+                color={iconColor}
+                onPress={onMoveDown}
+                testID="move-down"
+              />
+            ) : null}
+          </View>
+        ) : null
+      }
     />
   );
 }
@@ -151,5 +177,11 @@ const styles = StyleSheet.create({
   },
   metaText: {
     opacity: 0.6,
+  },
+  reorderButtons: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
   },
 });

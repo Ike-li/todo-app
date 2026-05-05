@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router";
-import { useColorScheme } from "react-native";
 import { PaperProvider, MD3LightTheme, MD3DarkTheme } from "react-native-paper";
+import { useColorScheme } from "../components/useColorScheme";
+import { LightColors, DarkColors } from "../constants/Colors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
 import { getToken } from "../src/services/api-client";
@@ -23,20 +24,12 @@ const queryClient = new QueryClient({
 
 const lightTheme = {
   ...MD3LightTheme,
-  colors: {
-    ...MD3LightTheme.colors,
-    primary: "#6200ee",
-    secondary: "#03dac6",
-  },
+  colors: LightColors,
 };
 
 const darkTheme = {
   ...MD3DarkTheme,
-  colors: {
-    ...MD3DarkTheme.colors,
-    primary: "#bb86fc",
-    secondary: "#03dac6",
-  },
+  colors: DarkColors,
 };
 
 export default function RootLayout() {

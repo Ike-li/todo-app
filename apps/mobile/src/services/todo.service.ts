@@ -81,6 +81,12 @@ export async function createSubTask(
   return apiClient.post<TodoResponse>("/todos", { ...input, parentId });
 }
 
+// --- Reorder ---
+
+export async function reorderTodos(items: { id: string; position: number }[]): Promise<void> {
+  return apiClient.patch<void>("/todos/reorder", { items });
+}
+
 // --- Tags ---
 
 export async function fetchTags(): Promise<TagResponse[]> {

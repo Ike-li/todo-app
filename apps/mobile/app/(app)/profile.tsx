@@ -116,6 +116,30 @@ export default function ProfileScreen() {
         </Card.Content>
       </Card>
 
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="titleMedium" style={styles.sectionTitle}>
+            Manage
+          </Text>
+          <Divider style={styles.divider} />
+          <List.Item
+            title="Categories"
+            description="Organize your todos with categories"
+            left={(props) => <List.Icon {...props} icon="tag-multiple" />}
+            onPress={() => router.push("/(app)/categories")}
+            right={(props) => <List.Icon {...props} icon="chevron-right" />}
+          />
+          <Divider />
+          <List.Item
+            title="Tags"
+            description="Label your todos with tags"
+            left={(props) => <List.Icon {...props} icon="tag" />}
+            onPress={() => router.push("/(app)/tags")}
+            right={(props) => <List.Icon {...props} icon="chevron-right" />}
+          />
+        </Card.Content>
+      </Card>
+
       <Button
         mode="contained"
         onPress={handleLogout}

@@ -10,6 +10,7 @@ import {
   toggleTodo as toggleTodoApi,
   deleteTodo as deleteTodoApi,
   updateTodo as updateTodoApi,
+  reorderTodos as reorderTodosApi,
   fetchSubTasks,
   createSubTask,
 } from "../services/todo.service";
@@ -86,12 +87,21 @@ export function useTodos(page = 1, limit = 20) {
     },
   });
 
+  const reorderTodos = useMutation({
+    mutationFn: (items: { id: string; position: number }[]) =>
+      reorderTodosApi(items),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
+
   return {
     todosQuery,
     createTodo,
     toggleTodo,
     deleteTodo,
     updateTodo,
+    reorderTodos,
   };
 }
 
