@@ -65,6 +65,10 @@ describe('TodosService', () => {
           ...dto,
           user: { connect: { id: userId } },
         },
+        include: {
+          category: true,
+          tags: { include: { tag: true } },
+        },
       });
       expect(result.title).toBe(dto.title);
       expect(result.description).toBe(dto.description);
@@ -198,6 +202,10 @@ describe('TodosService', () => {
       expect(prisma.todo.update).toHaveBeenCalledWith({
         where: { id: 'todo-1' },
         data: dto,
+        include: {
+          category: true,
+          tags: { include: { tag: true } },
+        },
       });
       expect(result.title).toBe(dto.title);
     });
@@ -213,6 +221,10 @@ describe('TodosService', () => {
       expect(prisma.todo.update).toHaveBeenCalledWith({
         where: { id: 'todo-1' },
         data: { completed: true },
+        include: {
+          category: true,
+          tags: { include: { tag: true } },
+        },
       });
       expect(result.completed).toBe(true);
     });
@@ -229,6 +241,10 @@ describe('TodosService', () => {
       expect(prisma.todo.update).toHaveBeenCalledWith({
         where: { id: 'todo-1' },
         data: { completed: false },
+        include: {
+          category: true,
+          tags: { include: { tag: true } },
+        },
       });
       expect(result.completed).toBe(false);
     });
