@@ -12,6 +12,8 @@ export function useCategories() {
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const createCategory = useMutation({

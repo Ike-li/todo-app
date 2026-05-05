@@ -1,3 +1,6 @@
+# Mobile E2E tests can be run locally with: maestro test .maestro/
+# Requires: brew install maestro
+
 name: CI
 
 on:
@@ -77,3 +80,40 @@ jobs:
 
       - name: E2E tests
         run: pnpm test:e2e
+
+  # Mobile E2E tests using Maestro
+  # To run locally: brew install maestro && maestro test .maestro/
+  # Requires a running iOS Simulator or Android Emulator with the app installed,
+  # and the API server running with seeded test data.
+  # mobile-e2e:
+  #   runs-on: macos-latest
+  #   needs: ci
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Install pnpm
+  #       uses: pnpm/action-setup@v4
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 18
+  #         cache: pnpm
+  #
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+  #
+  #     - name: Start API server
+  #       run: pnpm dev:api &
+  #
+  #     - name: Seed test data
+  #       run: pnpm db:seed
+  #
+  #     - name: Install Maestro
+  #       run: curl -Ls "https://get.mobile.dev/install" | bash
+  #
+  #     - name: Run Maestro E2E tests
+  #       run: maestro test .maestro/
+  #       env:
+  #         MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: todo-api
+    runtime: docker
+    dockerfilePath: apps/api/Dockerfile
+    region: oregon
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: "7d"
+    healthCheckPath: /

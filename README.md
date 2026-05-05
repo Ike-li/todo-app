@@ -61,3 +61,40 @@ todo-app/
 | `pnpm db:seed`   | Seed the database with sample data       |
 | `pnpm db:studio` | Open Prisma Studio to browse the database|
 | `pnpm lint`      | Lint all packages                        |
+
+## E2E Tests
+
+Mobile E2E tests use [Maestro](https://maestro.mobile.dev/).
+
+```bash
+# Install Maestro
+curl -Ls "https://get.mobile.dev/install" | bash
+
+# Run all E2E tests (requires running API and mobile app)
+pnpm test:mobile-e2e
+```
+
+## Deployment
+
+### API (Railway)
+
+1. Install the [Railway CLI](https://railway.app/cli)
+2. Login: `railway login`
+3. Create a project: `railway init`
+4. Add a PostgreSQL service: `railway add`
+5. Set environment variables:
+   - `DATABASE_URL` — from the PostgreSQL service
+   - `JWT_SECRET` — generate a secure secret
+   - `JWT_EXPIRES_IN` — `7d`
+6. Deploy: `railway up`
+
+Alternatively, use the Dockerfile at `apps/api/Dockerfile` with any Docker-compatible host.
+
+### Mobile (EAS)
+
+1. Install EAS CLI: `npm install -g eas-cli`
+2. Login: `eas login`
+3. Configure: `cd apps/mobile && eas build:configure`
+4. Update `EXPO_PUBLIC_API_URL` in `eas.json` to your deployed API URL
+5. Build: `eas build --platform all`
+6. Submit to stores: `eas submit`

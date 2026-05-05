@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Share } from "react-native";
 import { Card, Text, Divider, Button, List, useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../src/hooks/useAuth";
@@ -39,6 +39,25 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     await logout();
     router.replace("/(auth)/login");
+  };
+
+  const handleExport = async () => {
+    const exportData = todos.map((t: TodoResponse) => ({
+      title: t.title,
+      description: t.description,
+      completed: t.completed,
+      priority: t.priority,
+      dueDate: t.dueDate,
+      category: t.category?.name,
+      tags: t.tags?.map((tg: { tag: { name: string } }) => tg.tag.name),
+      createdAt: t.createdAt,
+    }));
+    const json = JSON.stringify(exportData, null, 2);
+    try {
+      await Share.share({ message: json, title: 'My Todos' });
+    } catch {
+      // User cancelled share
+    }
   };
 
   return (
@@ -135,6 +154,14 @@ export default function ProfileScreen() {
             description="Label your todos with tags"
             left={(props) => <List.Icon {...props} icon="tag" />}
             onPress={() => router.push("/(app)/tags")}
+            right={(props) => <List.Icon {...props} icon="chevron-right" />}
+          />
+          <Divider />
+          <List.Item
+            title="Export Todos"
+            description={`Export ${totalCount} todos as JSON`}
+            left={(props) => <List.Icon {...props} icon="export" />}
+            onPress={handleExport}
             right={(props) => <List.Icon {...props} icon="chevron-right" />}
           />
         </Card.Content>

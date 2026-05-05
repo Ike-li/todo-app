@@ -22,6 +22,8 @@ export function useTodos(page = 1, limit = 20) {
   const todosQuery = useQuery({
     queryKey: ["todos", page, limit],
     queryFn: () => fetchTodos(page, limit),
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const createTodo = useMutation({
@@ -112,6 +114,8 @@ export function useSubTasks(parentId: string | undefined) {
     queryKey: ["todos", "subtasks", parentId],
     queryFn: () => fetchSubTasks(parentId!),
     enabled: !!parentId,
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const addSubTask = useMutation({
@@ -133,6 +137,8 @@ export function useAllTodos() {
       const result = await fetchTodos(1, 100);
       return result.data;
     },
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
@@ -141,5 +147,7 @@ export function useTodo(id: string) {
     queryKey: ["todos", id],
     queryFn: () => fetchTodo(id),
     enabled: !!id,
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 }

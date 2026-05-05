@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
-import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
-import { FAB, Searchbar, SegmentedButtons, Text, useTheme } from "react-native-paper";
+import { useDebouncedValue } from "../../src/hooks/useDebouncedValue";
+import { View, StyleSheet, FlatList, RefreshControl, Alert } from "react-native";
+import { FAB, Searchbar, SegmentedButtons, Text, useTheme, Button } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useTodos } from "../../src/hooks/useTodos";
 import { TodoItem } from "../../src/components/TodoItem";
@@ -11,7 +12,10 @@ import type { TodoResponse } from "@todo-app/shared";
 export default function TodoListScreen() {
   const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebouncedValue(searchQuery, 300);
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   const router = useRouter();
   const { todosQuery, toggleTodo, deleteTodo, reorderTodos } = useTodos();
 
@@ -23,9 +27,9 @@ export default function TodoListScreen() {
   );
 
   const filteredTodos = sortedTodos.filter((todo: TodoResponse) => {
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    // Apply search filter (debounced)
+    if (debouncedSearch) {
+      const query = debouncedSearch.toLowerCase();
       const matchesTitle = todo.title.toLowerCase().includes(query);
       const matchesDescription = todo.description
         ?.toLowerCase()
@@ -88,6 +92,73 @@ export default function TodoListScreen() {
     [filteredTodos, reorderTodos]
   );
 
+  const handleLongPress = useCallback((id: string) => {
+    setIsSelectionMode(true);
+    setSelectedIds(new Set([id]));
+  }, []);
+
+  const handleSelectToggle = useCallback((id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      if (next.size === 0) {
+        setIsSelectionMode(false);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedIds(new Set(filteredTodos.map((t: TodoResponse) => t.id)));
+  }, [filteredTodos]);
+
+  const handleCancelSelection = useCallback(() => {
+    setSelectedIds(new Set());
+    setIsSelectionMode(false);
+  }, []);
+
+  const handleBatchComplete = useCallback(async () => {
+    for (const id of selectedIds) {
+      await toggleTodo.mutateAsync(id);
+    }
+    setSelectedIds(new Set());
+    setIsSelectionMode(false);
+  }, [selectedIds, toggleTodo]);
+
+  const handleBatchDelete = useCallback(async () => {
+    Alert.alert('Delete', `Delete ${selectedIds.size} todos?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          for (const id of selectedIds) {
+            await deleteTodo.mutateAsync(id);
+          }
+          setSelectedIds(new Set());
+          setIsSelectionMode(false);
+        },
+      },
+    ]);
+  }, [selectedIds, deleteTodo]);
+
+  const renderItem = useCallback(
+    ({ item, index }: { item: TodoResponse; index: number }) => (
+      <TodoItem
+        todo={item}
+        onToggle={isSelectionMode ? handleSelectToggle : handleToggle}
+        onPress={isSelectionMode ? handleSelectToggle : handlePress}
+        onMoveUp={index > 0 ? () => handleMoveUp(index) : undefined}
+        onMoveDown={index < filteredTodos.length - 1 ? () => handleMoveDown(index) : undefined}
+        onLongPress={handleLongPress}
+        selected={isSelectionMode ? selectedIds.has(item.id) : undefined}
+        testID={`todo-item-${item.id}`}
+      />
+    ),
+    [handleToggle, handlePress, handleSelectToggle, handleLongPress, handleMoveUp, handleMoveDown, filteredTodos.length, isSelectionMode, selectedIds]
+  );
+
   if (todosQuery.isLoading) {
     return <LoadingSpinner message="Loading your todos..." />;
   }
@@ -95,25 +166,39 @@ export default function TodoListScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { backgroundColor: colors.surface }]}>
-        <Searchbar
-          placeholder="Search todos..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          style={styles.searchBar}
-        />
+        {isSelectionMode ? (
+          <View style={styles.selectionHeader}>
+            <Button mode="text" onPress={handleCancelSelection} compact>
+              Cancel
+            </Button>
+            <Text variant="titleMedium">{selectedIds.size} selected</Text>
+            <Button mode="text" onPress={handleSelectAll} compact>
+              Select All
+            </Button>
+          </View>
+        ) : (
+          <>
+            <Searchbar
+              placeholder="Search todos..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              style={styles.searchBar}
+            />
 
-        <SegmentedButtons
-          value={filter}
-          onValueChange={(value) =>
-            setFilter(value as "all" | "active" | "completed")
-          }
-          buttons={[
-            { value: "all", label: "All" },
-            { value: "active", label: "Active" },
-            { value: "completed", label: "Done" },
-          ]}
-          style={styles.filterButtons}
-        />
+            <SegmentedButtons
+              value={filter}
+              onValueChange={(value) =>
+                setFilter(value as "all" | "active" | "completed")
+              }
+              buttons={[
+                { value: "all", label: "All" },
+                { value: "active", label: "Active" },
+                { value: "completed", label: "Done" },
+              ]}
+              style={styles.filterButtons}
+            />
+          </>
+        )}
       </View>
 
       {filteredTodos.length === 0 ? (
@@ -131,16 +216,16 @@ export default function TodoListScreen() {
         <FlatList
           data={filteredTodos}
           keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => (
-            <TodoItem
-              todo={item}
-              onToggle={handleToggle}
-              onPress={handlePress}
-              onMoveUp={index > 0 ? () => handleMoveUp(index) : undefined}
-              onMoveDown={index < filteredTodos.length - 1 ? () => handleMoveDown(index) : undefined}
-              testID={`todo-item-${item.id}`}
-            />
-          )}
+          renderItem={renderItem}
+          getItemLayout={(_, index) => ({
+            length: 72,
+            offset: 72 * index,
+            index,
+          })}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          initialNumToRender={10}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -149,6 +234,28 @@ export default function TodoListScreen() {
           }
           contentContainerStyle={styles.listContent}
         />
+      )}
+
+      {isSelectionMode && selectedIds.size > 0 && (
+        <View style={[styles.batchBar, { backgroundColor: colors.surface }]}>
+          <Button
+            mode="contained"
+            onPress={handleBatchComplete}
+            icon="check-circle"
+            style={styles.batchButton}
+          >
+            Complete ({selectedIds.size})
+          </Button>
+          <Button
+            mode="contained"
+            onPress={handleBatchDelete}
+            icon="delete"
+            buttonColor={colors.error}
+            style={styles.batchButton}
+          >
+            Delete ({selectedIds.size})
+          </Button>
+        </View>
       )}
 
       <FAB
@@ -187,5 +294,29 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 16,
     bottom: 16,
+  },
+  selectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  batchBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 12,
+    paddingBottom: 24,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+  },
+  batchButton: {
+    flex: 1,
+    marginHorizontal: 6,
   },
 });

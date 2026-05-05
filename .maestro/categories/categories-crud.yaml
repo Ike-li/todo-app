@@ -1,0 +1,22 @@
+appId: com.anonymous.todoapp
+---
+# Login
+- tapOn: "Email"
+- inputText: "test@example.com"
+- tapOn: "Password"
+- inputText: "password123"
+- tapOn: "Login"
+
+# Navigate to profile
+- tapOn:
+    icon: "account-circle"
+# Navigate to categories
+- tapOn: "Categories"
+- assertVisible: "Categories"
+
+# Create category via FAB
+- tapOn: "Add Category"
+- tapOn: "Name"
+- inputText: "Work"
+- tapOn: "Create"
+- assertVisible: "Work"

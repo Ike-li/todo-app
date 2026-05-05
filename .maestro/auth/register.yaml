@@ -1,0 +1,13 @@
+appId: com.anonymous.todoapp
+---
+- clearState
+- launchApp
+- tapOn: "Register"
+- tapOn: "Name"
+- inputText: "Test User"
+- tapOn: "Email"
+- inputText: "newuser@example.com"
+- tapOn: "Password"
+- inputText: "password123"
+- tapOn: "Register"
+- assertVisible: "My Todos"

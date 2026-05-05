@@ -36,7 +36,8 @@ interface ApiResponse<T> {
 
 async function request<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  retries = 1,
 ): Promise<T> {
   const token = await getToken();
 
@@ -49,34 +50,47 @@ async function request<T>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  if (response.status === 401) {
-    await removeToken();
-    throw new Error("Unauthorized");
-  }
-
-  if (!response.ok) {
-    const errorBody = await response.text();
-    let errorMessage = `API Error: ${response.status}`;
+  for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const parsed = JSON.parse(errorBody);
-      errorMessage = parsed.message || errorMessage;
-    } catch {
-      // Use default error message
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        ...options,
+        headers,
+      });
+
+      if (response.status === 401) {
+        await removeToken();
+        throw new Error("Unauthorized");
+      }
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        let errorMessage = `API Error: ${response.status}`;
+        try {
+          const parsed = JSON.parse(errorBody);
+          errorMessage = parsed.message || errorMessage;
+        } catch {
+          // Use default error message
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Handle 204 No Content (for DELETE)
+      if (response.status === 204) {
+        return undefined as T;
+      }
+
+      return response.json();
+    } catch (error) {
+      // Only retry on network errors (TypeError), not HTTP errors
+      if (error instanceof TypeError && attempt < retries) {
+        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+        continue;
+      }
+      throw error;
     }
-    throw new Error(errorMessage);
   }
 
-  // Handle 204 No Content (for DELETE)
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return response.json();
+  throw new Error("Request failed");
 }
 
 export const apiClient = {

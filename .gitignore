@@ -20,6 +20,10 @@ apps/mobile/web-build/
 *.swp
 *.swo
 
+# Deployment
+.vercel
+.railway
+
 # OS
 .DS_Store
 Thumbs.db

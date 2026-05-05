@@ -1,0 +1,33 @@
+appId: com.anonymous.todoapp
+---
+# Login first (assumes user exists)
+- tapOn: "Email"
+- inputText: "test@example.com"
+- tapOn: "Password"
+- inputText: "password123"
+- tapOn: "Login"
+- assertVisible: "My Todos"
+
+# Create a todo
+- tapOn: "New Todo"
+- tapOn: "Title"
+- inputText: "Buy groceries"
+- tapOn: "Description"
+- inputText: "Milk, eggs, bread"
+- tapOn: "Create"
+- assertVisible: "Buy groceries"
+
+# Toggle complete
+- tapOn:
+    id: "todo-checkbox"
+- assertVisible: "Buy groceries"
+
+# Open detail
+- tapOn: "Buy groceries"
+- assertVisible: "Buy groceries"
+- assertVisible: "Milk, eggs, bread"
+
+# Delete
+- tapOn: "Delete"
+- tapOn: "Delete"
+- assertVisible: "My Todos"

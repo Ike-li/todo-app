@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 import { List, Checkbox, Text, Badge, Icon, useTheme } from "react-native-paper";
 import type { TodoResponse } from "@todo-app/shared";
 
@@ -17,16 +17,38 @@ const PRIORITY_LABELS: Record<string, string> = {
   URGENT: "!",
 };
 
+const DUE_DATE_COLORS: Record<string, string> = {
+  overdue: "#f44336",
+  "due-today": "#ff9800",
+  "due-soon": "#ffc107",
+};
+
+function getDueDateStatus(dueDate: string | null, completed: boolean): 'overdue' | 'due-today' | 'due-soon' | null {
+  if (!dueDate || completed) return null;
+  const due = new Date(dueDate);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  due.setHours(0, 0, 0, 0);
+  const diff = due.getTime() - now.getTime();
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  if (days < 0) return 'overdue';
+  if (days === 0) return 'due-today';
+  if (days <= 3) return 'due-soon';
+  return null;
+}
+
 interface TodoItemProps {
   todo: TodoResponse;
   onToggle: (id: string) => void;
   onPress: (id: string) => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
+  onLongPress?: (id: string) => void;
+  selected?: boolean;
   testID?: string;
 }
 
-export function TodoItem({ todo, onToggle, onPress, onMoveUp, onMoveDown, testID }: TodoItemProps) {
+function TodoItemComponent({ todo, onToggle, onPress, onMoveUp, onMoveDown, onLongPress, selected, testID }: TodoItemProps) {
   const { colors } = useTheme();
   const iconColor = colors.onSurfaceVariant;
   const titleStyle = todo.completed
@@ -42,105 +64,146 @@ export function TodoItem({ todo, onToggle, onPress, onMoveUp, onMoveDown, testID
       })
     : null;
 
+  const dueDateStatus = getDueDateStatus(todo.dueDate, todo.completed);
+
   return (
-    <List.Item
-      testID={testID}
-      title={() => (
-        <View style={styles.titleRow}>
-          <Text testID="todo-title" style={titleStyle} variant="bodyLarge">
-            {todo.title}
-          </Text>
-          {showPriority && (
-            <Badge
-              style={[
-                styles.priorityBadge,
-                { backgroundColor: PRIORITY_COLORS[todo.priority] || "#999" },
-              ]}
-              size={20}
-            >
-              {PRIORITY_LABELS[todo.priority] || todo.priority}
-            </Badge>
-          )}
-        </View>
-      )}
-      description={() => (
-        <View>
-          {todo.description ? (
-            <Text variant="bodySmall" style={styles.description} numberOfLines={1}>
-              {todo.description}
+    <Pressable
+      onLongPress={onLongPress ? () => onLongPress(todo.id) : undefined}
+      delayLongPress={500}
+    >
+      <List.Item
+        testID={testID}
+        style={[
+          selected ? styles.selectedItem : undefined,
+        ]}
+        title={() => (
+          <View style={styles.titleRow}>
+            <Text testID="todo-title" style={titleStyle} variant="bodyLarge">
+              {todo.title}
             </Text>
-          ) : null}
-          <View style={styles.metaRow}>
-            {todo.subTasks && todo.subTasks.length > 0 && (
-              <View style={styles.metaItem}>
-                <Icon source="subdirectory-arrow-right" size={12} color={iconColor} />
-                <Text variant="labelSmall" style={styles.metaText}>
-                  {todo.subTasks.filter((s) => s.completed).length}/{todo.subTasks.length} sub-tasks
-                </Text>
-              </View>
-            )}
-            {formattedDueDate && (
-              <View style={styles.metaItem}>
-                <Icon source="calendar" size={12} color={iconColor} />
-                <Text variant="labelSmall" style={styles.metaText}>
-                  {formattedDueDate}
-                </Text>
-              </View>
-            )}
-            {todo.category && (
-              <View style={styles.metaItem}>
-                <Icon source="folder" size={12} color={iconColor} />
-                <Text variant="labelSmall" style={styles.metaText}>
-                  {todo.category.name}
-                </Text>
-              </View>
-            )}
-            {todo.tags && todo.tags.length > 0 && (
-              <View style={styles.metaItem}>
-                <Icon source="tag" size={12} color={iconColor} />
-                <Text variant="labelSmall" style={styles.metaText} numberOfLines={1}>
-                  {todo.tags.map((t) => t.tag.name).join(", ")}
-                </Text>
-              </View>
+            {showPriority && (
+              <Badge
+                style={[
+                  styles.priorityBadge,
+                  { backgroundColor: PRIORITY_COLORS[todo.priority] || "#999" },
+                ]}
+                size={20}
+              >
+                {PRIORITY_LABELS[todo.priority] || todo.priority}
+              </Badge>
             )}
           </View>
-        </View>
-      )}
-      onPress={() => onPress(todo.id)}
-      left={() => (
-        <Checkbox
-          testID="todo-checkbox"
-          status={todo.completed ? "checked" : "unchecked"}
-          onPress={() => onToggle(todo.id)}
-        />
-      )}
-      right={() =>
-        onMoveUp || onMoveDown ? (
-          <View style={styles.reorderButtons}>
-            {onMoveUp ? (
-              <Icon
-                source="chevron-up"
-                size={20}
-                color={iconColor}
-                onPress={onMoveUp}
-                testID="move-up"
-              />
+        )}
+        description={() => (
+          <View>
+            {todo.description ? (
+              <Text variant="bodySmall" style={styles.description} numberOfLines={1}>
+                {todo.description}
+              </Text>
             ) : null}
-            {onMoveDown ? (
-              <Icon
-                source="chevron-down"
-                size={20}
-                color={iconColor}
-                onPress={onMoveDown}
-                testID="move-down"
-              />
-            ) : null}
+            <View style={styles.metaRow}>
+              {todo.subTasks && todo.subTasks.length > 0 && (
+                <View style={styles.metaItem}>
+                  <Icon source="subdirectory-arrow-right" size={12} color={iconColor} />
+                  <Text variant="labelSmall" style={styles.metaText}>
+                    {todo.subTasks.filter((s) => s.completed).length}/{todo.subTasks.length} sub-tasks
+                  </Text>
+                </View>
+              )}
+              {formattedDueDate && (
+                <View style={styles.metaItem}>
+                  {dueDateStatus && (
+                    <View style={[styles.dueDateDot, { backgroundColor: DUE_DATE_COLORS[dueDateStatus] }]} />
+                  )}
+                  <Icon source="calendar" size={12} color={dueDateStatus ? DUE_DATE_COLORS[dueDateStatus] : iconColor} />
+                  <Text
+                    variant="labelSmall"
+                    style={[
+                      styles.metaText,
+                      dueDateStatus ? { color: DUE_DATE_COLORS[dueDateStatus], opacity: 1 } : undefined,
+                    ]}
+                  >
+                    {formattedDueDate}
+                  </Text>
+                </View>
+              )}
+              {todo.category && (
+                <View style={styles.metaItem}>
+                  <Icon source="folder" size={12} color={iconColor} />
+                  <Text variant="labelSmall" style={styles.metaText}>
+                    {todo.category.name}
+                  </Text>
+                </View>
+              )}
+              {todo.tags && todo.tags.length > 0 && (
+                <View style={styles.metaItem}>
+                  <Icon source="tag" size={12} color={iconColor} />
+                  <Text variant="labelSmall" style={styles.metaText} numberOfLines={1}>
+                    {todo.tags.map((t) => t.tag.name).join(", ")}
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
-        ) : null
-      }
-    />
+        )}
+        onPress={() => onPress(todo.id)}
+        left={() =>
+          selected !== undefined ? (
+            <Checkbox
+              testID="todo-checkbox"
+              status={selected ? "checked" : todo.completed ? "checked" : "unchecked"}
+              onPress={() => onToggle(todo.id)}
+            />
+          ) : (
+            <Checkbox
+              testID="todo-checkbox"
+              status={todo.completed ? "checked" : "unchecked"}
+              onPress={() => onToggle(todo.id)}
+            />
+          )
+        }
+        right={() =>
+          onMoveUp || onMoveDown ? (
+            <View style={styles.reorderButtons}>
+              {onMoveUp ? (
+                <Icon
+                  source="chevron-up"
+                  size={20}
+                  color={iconColor}
+                  onPress={onMoveUp}
+                  testID="move-up"
+                />
+              ) : null}
+              {onMoveDown ? (
+                <Icon
+                  source="chevron-down"
+                  size={20}
+                  color={iconColor}
+                  onPress={onMoveDown}
+                  testID="move-down"
+                />
+              ) : null}
+            </View>
+          ) : null
+        }
+      />
+    </Pressable>
   );
 }
+
+export const TodoItem = React.memo(TodoItemComponent, (prev, next) => {
+  return (
+    prev.todo.id === next.todo.id &&
+    prev.todo.title === next.todo.title &&
+    prev.todo.completed === next.todo.completed &&
+    prev.todo.description === next.todo.description &&
+    prev.todo.priority === next.todo.priority &&
+    prev.todo.dueDate === next.todo.dueDate &&
+    prev.todo.position === next.todo.position &&
+    prev.selected === next.selected &&
+    prev.onLongPress === next.onLongPress
+  );
+});
 
 const styles = StyleSheet.create({
   titleRow: {
@@ -183,5 +246,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 8,
+  },
+  dueDateDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 2,
+  },
+  selectedItem: {
+    backgroundColor: "rgba(98, 0, 238, 0.08)",
   },
 });

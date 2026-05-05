@@ -1,0 +1,21 @@
+appId: com.anonymous.todoapp
+---
+- tapOn: "Email"
+- inputText: "test@example.com"
+- tapOn: "Password"
+- inputText: "password123"
+- tapOn: "Login"
+
+# Search
+- tapOn: "Search todos..."
+- inputText: "nonexistent"
+- assertVisible: "No matching todos"
+
+# Clear search
+- clearInput
+- tapOn: "Search todos..."
+
+# Filter tabs
+- tapOn: "Active"
+- tapOn: "Done"
+- tapOn: "All"
