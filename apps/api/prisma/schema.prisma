@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  todos      Todo[]
+  categories Category[]
+
+  @@map("users")
+}
+
+model Todo {
+  id          String    @id @default(uuid())
+  title       String    @db.VarChar(255)
+  description String?   @db.Text
+  completed   Boolean   @default(false)
+  priority    Priority  @default(NONE)
+  dueDate     DateTime? @map("due_date")
+  position    Int       @default(0)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  parentId String?  @map("parent_id")
+  parent   Todo?    @relation("SubTasks", fields: [parentId], references: [id], onDelete: Cascade)
+  subTasks Todo[]   @relation("SubTasks")
+
+  categoryId String?   @map("category_id")
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  tags TagsOnTodos[]
+
+  @@index([userId, completed])
+  @@index([userId, dueDate])
+  @@index([userId, categoryId])
+  @@index([parentId])
+  @@map("todos")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(100)
+  color     String?  @db.VarChar(7)
+  icon      String?  @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  userId String   @map("user_id")
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  todos  Todo[]
+
+  @@unique([userId, name])
+  @@map("categories")
+}
+
+model Tag {
+  id   String @id @default(uuid())
+  name String @unique @db.VarChar(50)
+
+  todos TagsOnTodos[]
+
+  @@map("tags")
+}
+
+model TagsOnTodos {
+  todoId String @map("todo_id")
+  tagId  String @map("tag_id")
+  todo   Todo   @relation(fields: [todoId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([todoId, tagId])
+  @@map("tags_on_todos")
+}
+
+enum Priority {
+  NONE
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
