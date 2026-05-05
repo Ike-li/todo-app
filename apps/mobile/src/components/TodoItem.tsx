@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { List, Checkbox, Text, Badge, Icon } from "react-native-paper";
+import { List, Checkbox, Text, Badge, Icon, useTheme } from "react-native-paper";
 import type { TodoResponse } from "@todo-app/shared";
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -25,6 +25,8 @@ interface TodoItemProps {
 }
 
 export function TodoItem({ todo, onToggle, onPress, testID }: TodoItemProps) {
+  const { colors } = useTheme();
+  const iconColor = colors.onSurfaceVariant;
   const titleStyle = todo.completed
     ? [styles.title, styles.completed]
     : styles.title;
@@ -69,7 +71,7 @@ export function TodoItem({ todo, onToggle, onPress, testID }: TodoItemProps) {
           <View style={styles.metaRow}>
             {todo.subTasks && todo.subTasks.length > 0 && (
               <View style={styles.metaItem}>
-                <Icon source="subdirectory-arrow-right" size={12} color="#666" />
+                <Icon source="subdirectory-arrow-right" size={12} color={iconColor} />
                 <Text variant="labelSmall" style={styles.metaText}>
                   {todo.subTasks.filter((s) => s.completed).length}/{todo.subTasks.length} sub-tasks
                 </Text>
@@ -77,7 +79,7 @@ export function TodoItem({ todo, onToggle, onPress, testID }: TodoItemProps) {
             )}
             {formattedDueDate && (
               <View style={styles.metaItem}>
-                <Icon source="calendar" size={12} color="#666" />
+                <Icon source="calendar" size={12} color={iconColor} />
                 <Text variant="labelSmall" style={styles.metaText}>
                   {formattedDueDate}
                 </Text>
@@ -85,7 +87,7 @@ export function TodoItem({ todo, onToggle, onPress, testID }: TodoItemProps) {
             )}
             {todo.category && (
               <View style={styles.metaItem}>
-                <Icon source="folder" size={12} color="#666" />
+                <Icon source="folder" size={12} color={iconColor} />
                 <Text variant="labelSmall" style={styles.metaText}>
                   {todo.category.name}
                 </Text>
@@ -93,7 +95,7 @@ export function TodoItem({ todo, onToggle, onPress, testID }: TodoItemProps) {
             )}
             {todo.tags && todo.tags.length > 0 && (
               <View style={styles.metaItem}>
-                <Icon source="tag" size={12} color="#666" />
+                <Icon source="tag" size={12} color={iconColor} />
                 <Text variant="labelSmall" style={styles.metaText} numberOfLines={1}>
                   {todo.tags.map((t) => t.tag.name).join(", ")}
                 </Text>

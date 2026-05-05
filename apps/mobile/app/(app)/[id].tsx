@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import {
   Text,
@@ -10,6 +10,7 @@ import {
   IconButton,
   TextInput,
   ProgressBar,
+  useTheme,
 } from "react-native-paper";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTodo, useTodos, useSubTasks } from "../../src/hooks/useTodos";
@@ -35,6 +36,9 @@ const PRIORITY_LABELS: Record<string, string> = {
 };
 
 export default function TodoDetailScreen() {
+  const theme = useTheme();
+  const { colors } = theme;
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const todoQuery = useTodo(id!);
@@ -269,8 +273,8 @@ export default function TodoDetailScreen() {
         <Button
           mode="outlined"
           onPress={handleDelete}
-          textColor="#d32f2f"
-          style={styles.deleteButton}
+          textColor={colors.error}
+          style={[styles.deleteButton, { borderColor: colors.error }]}
           icon="delete"
         >
           Delete
@@ -367,140 +371,140 @@ export default function TodoDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  card: {
-    margin: 16,
-  },
-  headerRow: {
-    marginBottom: 16,
-    gap: 8,
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  title: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  completedTitle: {
-    textDecorationLine: "line-through",
-    opacity: 0.6,
-  },
-  priorityChip: {
-    alignSelf: "flex-start",
-  },
-  description: {
-    marginBottom: 16,
-    lineHeight: 24,
-  },
-  categoryRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-    gap: 8,
-  },
-  label: {
-    opacity: 0.6,
-  },
-  categoryChip: {
-    alignSelf: "flex-start",
-  },
-  tagsSection: {
-    marginBottom: 12,
-    gap: 6,
-  },
-  tagsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-  },
-  tagChip: {
-    marginRight: 0,
-  },
-  divider: {
-    marginVertical: 12,
-  },
-  meta: {
-    gap: 4,
-  },
-  metaText: {
-    opacity: 0.6,
-  },
-  actions: {
-    flexDirection: "row",
-    padding: 16,
-    gap: 12,
-  },
-  editButton: {
-    flex: 1,
-  },
-  deleteButton: {
-    flex: 1,
-    borderColor: "#d32f2f",
-  },
-  cancelButton: {
-    margin: 16,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 16,
-  },
-  backButton: {
-    marginTop: 16,
-  },
-  subTasksCard: {
-    marginHorizontal: 16,
-    marginBottom: 16,
-  },
-  subTasksHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  subTasksProgress: {
-    opacity: 0.6,
-  },
-  progressBar: {
-    marginBottom: 12,
-    height: 6,
-    borderRadius: 3,
-  },
-  emptySubTasks: {
-    opacity: 0.5,
-    marginBottom: 8,
-  },
-  subTaskRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 2,
-  },
-  subTaskTitle: {
-    flex: 1,
-    fontSize: 15,
-  },
-  subTaskCompleted: {
-    textDecorationLine: "line-through",
-    opacity: 0.5,
-  },
-  addSubTaskRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
-    gap: 4,
-  },
-  subTaskInput: {
-    flex: 1,
-  },
-  addSubTaskButton: {
-    marginTop: 8,
-    alignSelf: "flex-start",
-  },
-});
+const createStyles = (colors: ReturnType<typeof useTheme>["colors"]) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    card: {
+      margin: 16,
+    },
+    headerRow: {
+      marginBottom: 16,
+      gap: 8,
+    },
+    titleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    title: {
+      flex: 1,
+      marginLeft: 8,
+    },
+    completedTitle: {
+      textDecorationLine: "line-through",
+      opacity: 0.6,
+    },
+    priorityChip: {
+      alignSelf: "flex-start",
+    },
+    description: {
+      marginBottom: 16,
+      lineHeight: 24,
+    },
+    categoryRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 12,
+      gap: 8,
+    },
+    label: {
+      opacity: 0.6,
+    },
+    categoryChip: {
+      alignSelf: "flex-start",
+    },
+    tagsSection: {
+      marginBottom: 12,
+      gap: 6,
+    },
+    tagsRow: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 6,
+    },
+    tagChip: {
+      marginRight: 0,
+    },
+    divider: {
+      marginVertical: 12,
+    },
+    meta: {
+      gap: 4,
+    },
+    metaText: {
+      opacity: 0.6,
+    },
+    actions: {
+      flexDirection: "row",
+      padding: 16,
+      gap: 12,
+    },
+    editButton: {
+      flex: 1,
+    },
+    deleteButton: {
+      flex: 1,
+    },
+    cancelButton: {
+      margin: 16,
+    },
+    errorContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 16,
+    },
+    backButton: {
+      marginTop: 16,
+    },
+    subTasksCard: {
+      marginHorizontal: 16,
+      marginBottom: 16,
+    },
+    subTasksHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 8,
+    },
+    subTasksProgress: {
+      opacity: 0.6,
+    },
+    progressBar: {
+      marginBottom: 12,
+      height: 6,
+      borderRadius: 3,
+    },
+    emptySubTasks: {
+      opacity: 0.5,
+      marginBottom: 8,
+    },
+    subTaskRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 2,
+    },
+    subTaskTitle: {
+      flex: 1,
+      fontSize: 15,
+    },
+    subTaskCompleted: {
+      textDecorationLine: "line-through",
+      opacity: 0.5,
+    },
+    addSubTaskRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: 8,
+      gap: 4,
+    },
+    subTaskInput: {
+      flex: 1,
+    },
+    addSubTaskButton: {
+      marginTop: 8,
+      alignSelf: "flex-start",
+    },
+  });

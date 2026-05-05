@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Stack } from "expo-router";
-import { PaperProvider, MD3LightTheme } from "react-native-paper";
+import { useColorScheme } from "react-native";
+import { PaperProvider, MD3LightTheme, MD3DarkTheme } from "react-native-paper";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
 import { getToken } from "../src/services/api-client";
@@ -20,7 +21,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const theme = {
+const lightTheme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
@@ -29,7 +30,18 @@ const theme = {
   },
 };
 
+const darkTheme = {
+  ...MD3DarkTheme,
+  colors: {
+    ...MD3DarkTheme.colors,
+    primary: "#bb86fc",
+    secondary: "#03dac6",
+  },
+};
+
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === "dark" ? darkTheme : lightTheme;
   const [isReady, setIsReady] = useState(false);
   const setToken = useAuthStore((state) => state.setToken);
 

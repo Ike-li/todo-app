@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
-import { FAB, Searchbar, SegmentedButtons, Text } from "react-native-paper";
+import { FAB, Searchbar, SegmentedButtons, Text, useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useTodos } from "../../src/hooks/useTodos";
 import { TodoItem } from "../../src/components/TodoItem";
@@ -9,6 +9,7 @@ import { EmptyState } from "../../src/components/EmptyState";
 import type { TodoResponse } from "@todo-app/shared";
 
 export default function TodoListScreen() {
+  const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
   const router = useRouter();
@@ -62,8 +63,8 @@ export default function TodoListScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { backgroundColor: colors.surface }]}>
         <Searchbar
           placeholder="Search todos..."
           value={searchQuery}
@@ -132,11 +133,9 @@ export default function TodoListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
   header: {
     padding: 16,
-    backgroundColor: "#fff",
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

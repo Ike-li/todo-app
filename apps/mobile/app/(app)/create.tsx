@@ -1,11 +1,13 @@
 import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
+import { useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useTodos } from "../../src/hooks/useTodos";
 import { TodoForm } from "../../src/components/TodoForm";
 import type { TodoCreate } from "@todo-app/shared";
 
 export default function CreateTodoScreen() {
+  const { colors } = useTheme();
   const router = useRouter();
   const { createTodo } = useTodos();
 
@@ -15,7 +17,7 @@ export default function CreateTodoScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={{ flex: 1, backgroundColor: colors.surface }}>
       <TodoForm
         onSubmit={handleSubmit}
         isLoading={createTodo.isPending}
@@ -23,10 +25,3 @@ export default function CreateTodoScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-});
