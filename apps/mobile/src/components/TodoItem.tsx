@@ -70,6 +70,9 @@ function TodoItemComponent({ todo, onToggle, onPress, onMoveUp, onMoveDown, onLo
     <Pressable
       onLongPress={onLongPress ? () => onLongPress(todo.id) : undefined}
       delayLongPress={500}
+      accessibilityLabel={todo.title}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: todo.completed }}
     >
       <List.Item
         testID={testID}
@@ -154,12 +157,18 @@ function TodoItemComponent({ todo, onToggle, onPress, onMoveUp, onMoveDown, onLo
               testID="todo-checkbox"
               status={selected ? "checked" : todo.completed ? "checked" : "unchecked"}
               onPress={() => onToggle(todo.id)}
+              accessibilityRole="checkbox"
+              accessibilityLabel="Select"
+              accessibilityState={{ checked: selected || todo.completed }}
             />
           ) : (
             <Checkbox
               testID="todo-checkbox"
               status={todo.completed ? "checked" : "unchecked"}
               onPress={() => onToggle(todo.id)}
+              accessibilityRole="checkbox"
+              accessibilityLabel="Mark as completed"
+              accessibilityState={{ checked: todo.completed }}
             />
           )
         }
@@ -173,6 +182,7 @@ function TodoItemComponent({ todo, onToggle, onPress, onMoveUp, onMoveDown, onLo
                   iconColor={iconColor}
                   onPress={onMoveUp}
                   testID="move-up"
+                  accessibilityLabel="Move up"
                 />
               ) : null}
               {onMoveDown ? (
@@ -182,6 +192,7 @@ function TodoItemComponent({ todo, onToggle, onPress, onMoveUp, onMoveDown, onLo
                   iconColor={iconColor}
                   onPress={onMoveDown}
                   testID="move-down"
+                  accessibilityLabel="Move down"
                 />
               ) : null}
             </View>

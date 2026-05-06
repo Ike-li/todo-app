@@ -8,7 +8,7 @@ interface LoadingSpinnerProps {
 
 export function LoadingSpinner({ message }: LoadingSpinnerProps) {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityLabel={message || "Loading"} accessibilityRole="progressbar">
       <ActivityIndicator size="large" />
       {message && (
         <Text variant="bodyMedium" style={styles.message}>

@@ -145,6 +145,7 @@ export default function ProfileScreen() {
             left={(props) => <List.Icon {...props} icon="tag-multiple" />}
             onPress={() => router.push("/(app)/categories")}
             right={(props) => <List.Icon {...props} icon="chevron-right" />}
+            accessibilityLabel="Manage categories"
           />
           <Divider />
           <List.Item
@@ -153,6 +154,7 @@ export default function ProfileScreen() {
             left={(props) => <List.Icon {...props} icon="tag" />}
             onPress={() => router.push("/(app)/tags")}
             right={(props) => <List.Icon {...props} icon="chevron-right" />}
+            accessibilityLabel="Manage tags"
           />
           <Divider />
           <List.Item
@@ -161,6 +163,7 @@ export default function ProfileScreen() {
             left={(props) => <List.Icon {...props} icon="export" />}
             onPress={handleExport}
             right={(props) => <List.Icon {...props} icon="chevron-right" />}
+            accessibilityLabel="Export todos"
           />
         </Card.Content>
       </Card>
@@ -172,6 +175,7 @@ export default function ProfileScreen() {
         buttonColor={colors.error}
         icon="logout"
         testID="sign-out-button"
+        accessibilityLabel="Sign out"
       >
         Sign Out
       </Button>

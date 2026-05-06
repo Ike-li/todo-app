@@ -53,6 +53,7 @@ export default function LoginScreen() {
             autoCapitalize="none"
             autoComplete="email"
             disabled={login.isPending}
+            accessibilityLabel="Email address"
           />
 
           <TextInput
@@ -62,6 +63,7 @@ export default function LoginScreen() {
             mode="outlined"
             secureTextEntry
             disabled={login.isPending}
+            accessibilityLabel="Password"
           />
 
           <HelperText type="error" visible={!!error}>
@@ -74,6 +76,7 @@ export default function LoginScreen() {
             loading={login.isPending}
             disabled={login.isPending}
             style={styles.loginButton}
+            accessibilityLabel="Sign in"
           >
             {login.isPending ? "Signing in..." : "Sign In"}
           </Button>

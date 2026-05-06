@@ -58,6 +58,7 @@ export default function RegisterScreen() {
             mode="outlined"
             autoCapitalize="words"
             disabled={register.isPending}
+            accessibilityLabel="Name"
           />
 
           <TextInput
@@ -69,6 +70,7 @@ export default function RegisterScreen() {
             autoCapitalize="none"
             autoComplete="email"
             disabled={register.isPending}
+            accessibilityLabel="Email address"
           />
 
           <TextInput
@@ -78,6 +80,7 @@ export default function RegisterScreen() {
             mode="outlined"
             secureTextEntry
             disabled={register.isPending}
+            accessibilityLabel="Password"
           />
 
           <HelperText type="error" visible={!!error}>
@@ -90,6 +93,7 @@ export default function RegisterScreen() {
             loading={register.isPending}
             disabled={register.isPending}
             style={styles.registerButton}
+            accessibilityLabel="Create account"
           >
             {register.isPending ? "Creating account..." : "Create Account"}
           </Button>

@@ -92,6 +92,7 @@ export function TodoForm({
       setSelectedTags(initialValues.tags || []);
       setParentId(initialValues.parentId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     initialValues?.title,
     initialValues?.description,
@@ -175,6 +176,7 @@ export function TodoForm({
         mode="outlined"
         error={!!error}
         disabled={isLoading}
+        accessibilityLabel="Todo title"
       />
 
       <HelperText type="error" visible={!!error}>
@@ -191,6 +193,7 @@ export function TodoForm({
         numberOfLines={3}
         disabled={isLoading}
         style={styles.descriptionInput}
+        accessibilityLabel="Todo description"
       />
 
       {/* Priority picker */}
@@ -209,6 +212,7 @@ export function TodoForm({
             ]}
             selectedColor={priority === p.value ? p.color : undefined}
             disabled={isLoading}
+            accessibilityLabel={`Priority: ${p.label}`}
           >
             {p.label}
           </Chip>
@@ -225,6 +229,7 @@ export function TodoForm({
         disabled={isLoading}
         style={styles.fieldInput}
         left={<TextInput.Icon icon="calendar" />}
+        accessibilityLabel="Due date"
       />
 
       {/* Category selector */}
@@ -355,6 +360,7 @@ export function TodoForm({
             style={styles.tagInput}
             onSubmitEditing={() => handleAddTag(newTag)}
             returnKeyType="done"
+            accessibilityLabel="Add a tag"
           />
           <IconButton
             icon="plus"
@@ -393,6 +399,8 @@ export function TodoForm({
         loading={isLoading}
         disabled={isLoading}
         style={styles.submitButton}
+        accessibilityRole="button"
+        accessibilityLabel={isLoading ? "Creating..." : initialValues ? "Update todo" : "Create todo"}
       >
         {isLoading
           ? "Creating..."

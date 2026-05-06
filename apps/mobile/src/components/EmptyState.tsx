@@ -16,7 +16,7 @@ export function EmptyState({
   onAction,
 }: EmptyStateProps) {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityLabel={title}>
       <Text variant="headlineSmall" style={styles.title}>
         {title}
       </Text>

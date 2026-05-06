@@ -54,7 +54,7 @@ export default function RootLayout() {
     }
 
     checkAuth();
-  }, []);
+  }, [setToken]);
 
   if (!isReady) {
     return null;

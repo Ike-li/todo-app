@@ -182,6 +182,7 @@ export default function TodoListScreen() {
               value={searchQuery}
               onChangeText={setSearchQuery}
               style={styles.searchBar}
+              accessibilityLabel="Search todos"
             />
 
             <SegmentedButtons
@@ -274,6 +275,7 @@ export default function TodoListScreen() {
         onPress={handleCreate}
         testID="create-fab"
         label="New Todo"
+        accessibilityLabel="Create new todo"
       />
     </View>
   );
