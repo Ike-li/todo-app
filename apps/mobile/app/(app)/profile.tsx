@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { View, StyleSheet, ScrollView, Share } from "react-native";
-import { Card, Text, Divider, Button, List, useTheme } from "react-native-paper";
+import { Card, Text, Divider, Button, List, useTheme, type MD3Theme } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../src/hooks/useAuth";
 import { useAuthStore } from "../../src/stores/auth.store";
@@ -181,7 +181,7 @@ export default function ProfileScreen() {
   );
 }
 
-const createStyles = (colors: ReturnType<typeof useTheme>["colors"]) =>
+const createStyles = (colors: MD3Theme['colors']) =>
   StyleSheet.create({
     container: {
       flex: 1,

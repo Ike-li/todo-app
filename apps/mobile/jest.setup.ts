@@ -39,16 +39,21 @@ jest.mock("react-native-paper", () => {
         loading ? React.createElement(ActivityIndicator, null) : null,
         React.createElement(Text, null, children)
       ),
-    TextInput: React.forwardRef(({ label, onChangeText, error, ...props }: any, ref: any) =>
-      React.createElement(View, { ...props },
-        label ? React.createElement(Text, null, label) : null,
-        React.createElement(TextInput, {
-          ref,
-          onChangeText,
-          ...props,
-        }),
-        error ? React.createElement(Text, { testID: "error-text" }, error) : null,
-      )
+    TextInput: Object.assign(
+      React.forwardRef(({ label, onChangeText, error, ...props }: any, ref: any) =>
+        React.createElement(View, { ...props },
+          label ? React.createElement(Text, null, label) : null,
+          React.createElement(TextInput, {
+            ref,
+            onChangeText,
+            ...props,
+          }),
+          error ? React.createElement(Text, { testID: "error-text" }, error) : null,
+        )
+      ),
+      {
+        Icon: ({ icon }: any) => React.createElement(Text, null, icon),
+      }
     ),
     Checkbox: ({ status, onPress, ...props }: any) =>
       React.createElement(Pressable, { onPress, testID: props.testID },
@@ -85,6 +90,27 @@ jest.mock("react-native-paper", () => {
     ActivityIndicator: (props: any) => React.createElement(ActivityIndicator, props),
     HelperText: ({ children, type, visible }: any) =>
       visible ? React.createElement(Text, { testID: "helper-text" }, children) : null,
+    Chip: ({ children, selected, onPress, onClose, disabled, style, ...props }: any) =>
+      React.createElement(Pressable, { onPress: disabled ? undefined : onPress },
+        React.createElement(Text, null, typeof children === "string" ? children : null),
+        onClose ? React.createElement(Pressable, { onPress: onClose, testID: "chip-close" }, React.createElement(Text, null, "close")) : null,
+      ),
+    Badge: ({ children, style, ...props }: any) =>
+      React.createElement(Text, { ...props }, children),
+    IconButton: ({ icon, onPress, disabled, ...props }: any) =>
+      React.createElement(Pressable, { onPress: disabled ? undefined : onPress, testID: props.testID },
+        React.createElement(Text, null, icon),
+      ),
+    Menu: ({ children, visible, anchor }: any) =>
+      React.createElement(View, null,
+        anchor || null,
+        visible ? children : null,
+      ),
+    'Menu.Item': ({ title, onPress, disabled }: any) =>
+      React.createElement(Pressable, { onPress: disabled ? undefined : onPress },
+        React.createElement(Text, null, title),
+      ),
+    Divider: () => React.createElement(View, null),
     useTheme: () => ({
       colors: {
         primary: "#6200ee",

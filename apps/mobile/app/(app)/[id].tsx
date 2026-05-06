@@ -11,6 +11,7 @@ import {
   TextInput,
   ProgressBar,
   useTheme,
+  type MD3Theme,
 } from "react-native-paper";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTodo, useTodos, useSubTasks } from "../../src/hooks/useTodos";
@@ -371,7 +372,7 @@ export default function TodoDetailScreen() {
   );
 }
 
-const createStyles = (colors: ReturnType<typeof useTheme>["colors"]) =>
+const createStyles = (colors: MD3Theme['colors']) =>
   StyleSheet.create({
     container: {
       flex: 1,

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet, Pressable } from "react-native";
-import { List, Checkbox, Text, Badge, Icon, useTheme } from "react-native-paper";
+import { List, Checkbox, Text, Badge, Icon, IconButton, useTheme } from "react-native-paper";
 import type { TodoResponse } from "@todo-app/shared";
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -106,7 +106,7 @@ function TodoItemComponent({ todo, onToggle, onPress, onMoveUp, onMoveDown, onLo
                 <View style={styles.metaItem}>
                   <Icon source="subdirectory-arrow-right" size={12} color={iconColor} />
                   <Text variant="labelSmall" style={styles.metaText}>
-                    {todo.subTasks.filter((s) => s.completed).length}/{todo.subTasks.length} sub-tasks
+                    {todo.subTasks.filter((s: { completed: boolean }) => s.completed).length}/{todo.subTasks.length} sub-tasks
                   </Text>
                 </View>
               )}
@@ -139,7 +139,7 @@ function TodoItemComponent({ todo, onToggle, onPress, onMoveUp, onMoveDown, onLo
                 <View style={styles.metaItem}>
                   <Icon source="tag" size={12} color={iconColor} />
                   <Text variant="labelSmall" style={styles.metaText} numberOfLines={1}>
-                    {todo.tags.map((t) => t.tag.name).join(", ")}
+                    {todo.tags.map((t: { tag: { name: string } }) => t.tag.name).join(", ")}
                   </Text>
                 </View>
               )}
@@ -166,19 +166,19 @@ function TodoItemComponent({ todo, onToggle, onPress, onMoveUp, onMoveDown, onLo
           onMoveUp || onMoveDown ? (
             <View style={styles.reorderButtons}>
               {onMoveUp ? (
-                <Icon
-                  source="chevron-up"
+                <IconButton
+                  icon="chevron-up"
                   size={20}
-                  color={iconColor}
+                  iconColor={iconColor}
                   onPress={onMoveUp}
                   testID="move-up"
                 />
               ) : null}
               {onMoveDown ? (
-                <Icon
-                  source="chevron-down"
+                <IconButton
+                  icon="chevron-down"
                   size={20}
-                  color={iconColor}
+                  iconColor={iconColor}
                   onPress={onMoveDown}
                   testID="move-down"
                 />
