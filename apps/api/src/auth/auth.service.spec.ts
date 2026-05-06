@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -10,7 +10,7 @@ jest.mock('@prisma/client', () => ({
   PrismaClient: class MockPrismaClient {},
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
 const { PrismaService } = require('../prisma/prisma.service');
 
 jest.mock('bcrypt');
@@ -40,6 +40,7 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         { provide: PrismaService, useValue: prisma },
         { provide: JwtService, useValue: jwtService },
         {
@@ -117,7 +118,10 @@ describe('AuthService', () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
-      const result = await service.validateUser('test@example.com', 'password123');
+      const result = await service.validateUser(
+        'test@example.com',
+        'password123',
+      );
 
       expect(result).toEqual({
         id: mockUser.id,
@@ -133,7 +137,10 @@ describe('AuthService', () => {
       prisma.user.findUnique.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      const result = await service.validateUser('test@example.com', 'wrong-password');
+      const result = await service.validateUser(
+        'test@example.com',
+        'wrong-password',
+      );
 
       expect(result).toBeNull();
     });
@@ -141,20 +148,23 @@ describe('AuthService', () => {
     it('should return null when user is not found', async () => {
       prisma.user.findUnique.mockResolvedValue(null);
 
-      const result = await service.validateUser('nonexistent@example.com', 'password123');
+      const result = await service.validateUser(
+        'nonexistent@example.com',
+        'password123',
+      );
 
       expect(result).toBeNull();
     });
   });
 
   describe('login()', () => {
-    it('should return a JWT access token', async () => {
+    it('should return a JWT access token', () => {
       const user = {
         id: 'user-uuid-1',
         email: 'test@example.com',
       };
 
-      const result = await service.login(user);
+      const result = service.login(user);
 
       expect(jwtService.sign).toHaveBeenCalledWith({
         sub: user.id,

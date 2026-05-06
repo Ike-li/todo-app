@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
@@ -96,10 +97,7 @@ describe('TagsController (e2e)', () => {
     });
 
     it('should return 400 when name is missing', async () => {
-      await request(app.getHttpServer())
-        .post('/tags')
-        .send({})
-        .expect(400);
+      await request(app.getHttpServer()).post('/tags').send({}).expect(400);
     });
   });
 
@@ -108,9 +106,7 @@ describe('TagsController (e2e)', () => {
       await prisma.tag.create({ data: { name: 'alpha' } });
       await prisma.tag.create({ data: { name: 'beta' } });
 
-      const res = await request(app.getHttpServer())
-        .get('/tags')
-        .expect(200);
+      const res = await request(app.getHttpServer()).get('/tags').expect(200);
 
       expect(res.body).toHaveLength(2);
       expect(res.body[0].name).toBe('alpha');
@@ -120,9 +116,7 @@ describe('TagsController (e2e)', () => {
     it('should return empty array when no tags exist (200)', async () => {
       await prisma.tag.deleteMany();
 
-      const res = await request(app.getHttpServer())
-        .get('/tags')
-        .expect(200);
+      const res = await request(app.getHttpServer()).get('/tags').expect(200);
 
       expect(res.body).toHaveLength(0);
     });
@@ -154,9 +148,7 @@ describe('TagsController (e2e)', () => {
     it('should delete a tag (200)', async () => {
       const tag = await prisma.tag.create({ data: { name: 'deleteme' } });
 
-      await request(app.getHttpServer())
-        .delete(`/tags/${tag.id}`)
-        .expect(200);
+      await request(app.getHttpServer()).delete(`/tags/${tag.id}`).expect(200);
 
       const res = await request(app.getHttpServer())
         .get(`/tags/${tag.id}`)

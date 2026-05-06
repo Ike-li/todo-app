@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, ConflictException } from '@nestjs/common';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep } from 'jest-mock-extended';
 
 // Mock PrismaClient before any imports that depend on it
 jest.mock('@prisma/client', () => ({
@@ -13,7 +14,7 @@ import { CreateTagDto } from './dto/create-tag.dto';
 
 describe('TagService', () => {
   let service: TagService;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let prisma: any;
 
   const mockTag = {

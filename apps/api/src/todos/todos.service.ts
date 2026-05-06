@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Prisma, Todo } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
@@ -24,14 +28,17 @@ export class TodosService {
       data: {
         ...rest,
         ...(dueDate && { dueDate: new Date(dueDate) }),
-        ...(categoryId !== undefined && { category: { connect: { id: categoryId } } }),
+        ...(categoryId !== undefined && {
+          category: { connect: { id: categoryId } },
+        }),
         ...(parentId && { parent: { connect: { id: parentId } } }),
         user: { connect: { id: userId } },
-        ...(tags && tags.length > 0 && {
-          tags: {
-            create: await this.resolveTagIds(tags),
-          },
-        }),
+        ...(tags &&
+          tags.length > 0 && {
+            tags: {
+              create: await this.resolveTagIds(tags),
+            },
+          }),
       },
       include: {
         category: true,
@@ -140,7 +147,9 @@ export class TodosService {
       where: { id },
       data: {
         ...rest,
-        ...(dueDate !== undefined && { dueDate: dueDate ? new Date(dueDate) : null }),
+        ...(dueDate !== undefined && {
+          dueDate: dueDate ? new Date(dueDate) : null,
+        }),
         ...(categoryId !== undefined && {
           category: categoryId
             ? { connect: { id: categoryId } }
@@ -151,11 +160,12 @@ export class TodosService {
             ? { connect: { id: parentId } }
             : { disconnect: true },
         }),
-        ...(tags && tags.length > 0 && {
-          tags: {
-            create: await this.resolveTagIds(tags),
-          },
-        }),
+        ...(tags &&
+          tags.length > 0 && {
+            tags: {
+              create: await this.resolveTagIds(tags),
+            },
+          }),
       },
       include: {
         category: true,

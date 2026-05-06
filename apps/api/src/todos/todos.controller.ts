@@ -48,7 +48,10 @@ export class TodosController {
   }
 
   @Get(':id')
-  async findOne(@Req() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
+  async findOne(
+    @Req() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     return this.todosService.findOne(req.user.sub, id);
   }
 
@@ -76,7 +79,10 @@ export class TodosController {
 
   @Delete(':id')
   @HttpCode(200)
-  async remove(@Req() req: RequestWithUser, @Param('id', ParseUUIDPipe) id: string) {
+  async remove(
+    @Req() req: RequestWithUser,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     return this.todosService.remove(req.user.sub, id);
   }
 }

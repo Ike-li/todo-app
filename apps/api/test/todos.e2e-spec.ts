@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
@@ -82,9 +83,7 @@ describe('TodosController (e2e)', () => {
         },
       });
 
-      const res = await request(app.getHttpServer())
-        .get('/todos')
-        .expect(200);
+      const res = await request(app.getHttpServer()).get('/todos').expect(200);
 
       expect(res.body.data).toHaveLength(1);
       expect(res.body.total).toBe(1);
@@ -166,9 +165,7 @@ describe('TodosController (e2e)', () => {
         .expect(200);
 
       // Verify deletion
-      await request(app.getHttpServer())
-        .get(`/todos/${todo.id}`)
-        .expect(404);
+      await request(app.getHttpServer()).get(`/todos/${todo.id}`).expect(404);
     });
   });
 });

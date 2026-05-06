@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
@@ -60,7 +61,11 @@ describe('AuthController (e2e)', () => {
 
   describe('POST /auth/register', () => {
     it('should return 201 with accessToken', async () => {
-      const dto = { email: 'test@example.com', password: 'password123', name: 'Test User' };
+      const dto = {
+        email: 'test@example.com',
+        password: 'password123',
+        name: 'Test User',
+      };
       const hashedPassword = 'hashed-password';
 
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
@@ -99,14 +104,14 @@ describe('AuthController (e2e)', () => {
     });
 
     it('should return 400 for invalid email', async () => {
-      const response = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/auth/register')
         .send({ email: 'not-an-email', password: 'password123' })
         .expect(400);
     });
 
     it('should return 400 for short password', async () => {
-      const response = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/auth/register')
         .send({ email: 'test@example.com', password: 'short' })
         .expect(400);
@@ -156,9 +161,7 @@ describe('AuthController (e2e)', () => {
 
   describe('GET /auth/me', () => {
     it('should return 401 without token', async () => {
-      await request(app.getHttpServer())
-        .get('/auth/me')
-        .expect(401);
+      await request(app.getHttpServer()).get('/auth/me').expect(401);
     });
   });
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
@@ -206,8 +207,6 @@ describe('Todo App API (e2e)', () => {
   describe('Todos CRUD', () => {
     let todoId: string;
     let categoryId: string;
-    let tagId1: string;
-    let tagId2: string;
 
     beforeAll(async () => {
       // Create a category for user A
@@ -219,19 +218,17 @@ describe('Todo App API (e2e)', () => {
       categoryId = catRes.body.id;
 
       // Create tags
-      const tag1 = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/tags')
         .set(auth(tokenA))
         .send({ name: 'important' })
         .expect(201);
-      tagId1 = tag1.body.id;
 
-      const tag2 = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/tags')
         .set(auth(tokenA))
         .send({ name: 'urgent-tag' })
         .expect(201);
-      tagId2 = tag2.body.id;
     });
 
     describe('POST /todos', () => {
@@ -250,7 +247,9 @@ describe('Todo App API (e2e)', () => {
           .expect(201);
 
         expect(res.body.title).toBe('Build E2E tests');
-        expect(res.body.description).toBe('Write comprehensive tests for the API');
+        expect(res.body.description).toBe(
+          'Write comprehensive tests for the API',
+        );
         expect(res.body.priority).toBe('HIGH');
         expect(res.body.completed).toBe(false);
         expect(res.body.category).toBeDefined();
@@ -355,9 +354,9 @@ describe('Todo App API (e2e)', () => {
           .expect(200);
 
         expect(res.body.data.length).toBeGreaterThanOrEqual(1);
-        expect(
-          res.body.data.some((t: any) => t.title.includes('E2E')),
-        ).toBe(true);
+        expect(res.body.data.some((t: any) => t.title.includes('E2E'))).toBe(
+          true,
+        );
       });
     });
 
@@ -640,8 +639,6 @@ describe('Todo App API (e2e)', () => {
   // ================================================================
 
   describe('Tags CRUD', () => {
-    let tagId: string;
-
     describe('POST /tags', () => {
       it('should create a tag', async () => {
         const res = await request(app.getHttpServer())
@@ -651,7 +648,6 @@ describe('Todo App API (e2e)', () => {
           .expect(201);
 
         expect(res.body.name).toBe('frontend');
-        tagId = res.body.id;
       });
 
       it('should normalize tag name to lowercase', async () => {
@@ -734,8 +730,6 @@ describe('Todo App API (e2e)', () => {
 
   describe('Sub-tasks', () => {
     let parentTodoId: string;
-    let childTodoId1: string;
-    let childTodoId2: string;
 
     it('should create a parent todo', async () => {
       const res = await request(app.getHttpServer())
@@ -763,7 +757,6 @@ describe('Todo App API (e2e)', () => {
         })
         .expect(201);
 
-      childTodoId1 = res1.body.id;
       expect(res1.body.parentId).toBe(parentTodoId);
 
       const res2 = await request(app.getHttpServer())
@@ -776,7 +769,6 @@ describe('Todo App API (e2e)', () => {
         })
         .expect(201);
 
-      childTodoId2 = res2.body.id;
       expect(res2.body.parentId).toBe(parentTodoId);
     });
 
@@ -829,7 +821,10 @@ describe('Todo App API (e2e)', () => {
   // ================================================================
 
   describe('Authorization', () => {
-    const protectedEndpoints: Array<{ method: 'get' | 'post' | 'patch' | 'delete'; path: string }> = [
+    const protectedEndpoints: Array<{
+      method: 'get' | 'post' | 'patch' | 'delete';
+      path: string;
+    }> = [
       { method: 'get', path: '/auth/me' },
       { method: 'get', path: '/todos' },
       { method: 'post', path: '/todos' },
@@ -842,9 +837,7 @@ describe('Todo App API (e2e)', () => {
     it.each(protectedEndpoints)(
       'should return 401 for $method $path without auth',
       async ({ method, path }) => {
-        await request(app.getHttpServer())
-          [method](path)
-          .expect(401);
+        await request(app.getHttpServer())[method](path).expect(401);
       },
     );
 

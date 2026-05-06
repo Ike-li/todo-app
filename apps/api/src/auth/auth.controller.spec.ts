@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method, @typescript-eslint/require-await */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 
@@ -57,7 +58,9 @@ describe('AuthController', () => {
         email: 'existing@example.com',
         password: 'password123',
       };
-      authService.register.mockRejectedValue(new ConflictException('Email already exists'));
+      authService.register.mockRejectedValue(
+        new ConflictException('Email already exists'),
+      );
 
       await expect(controller.register(dto)).rejects.toThrow(ConflictException);
     });
@@ -75,7 +78,10 @@ describe('AuthController', () => {
 
       const result = await controller.login(dto);
 
-      expect(authService.validateUser).toHaveBeenCalledWith(dto.email, dto.password);
+      expect(authService.validateUser).toHaveBeenCalledWith(
+        dto.email,
+        dto.password,
+      );
       expect(authService.login).toHaveBeenCalledWith(mockUser);
       expect(result).toEqual({ accessToken: 'jwt-token' });
     });
@@ -87,7 +93,9 @@ describe('AuthController', () => {
       };
       authService.validateUser.mockResolvedValue(null);
 
-      await expect(controller.login(dto)).rejects.toThrow(UnauthorizedException);
+      await expect(controller.login(dto)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 
@@ -97,7 +105,7 @@ describe('AuthController', () => {
         user: { id: 'user-1', email: 'test@example.com' },
       };
 
-      const result = controller.getMe(mockReq as any);
+      const result = controller.getMe(mockReq);
 
       expect(result).toEqual(mockReq.user);
     });

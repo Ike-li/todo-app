@@ -1,12 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 
 jest.mock('@prisma/client', () => ({
   PrismaClient: class MockPrismaClient {},
-  Priority: { NONE: 'NONE', LOW: 'LOW', MEDIUM: 'MEDIUM', HIGH: 'HIGH', URGENT: 'URGENT' },
+  Priority: {
+    NONE: 'NONE',
+    LOW: 'LOW',
+    MEDIUM: 'MEDIUM',
+    HIGH: 'HIGH',
+    URGENT: 'URGENT',
+  },
 }));
 
 import { TodosController } from './todos.controller';
-import { TodosService, PaginatedResult } from './todos.service';
+import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { QueryTodoDto } from './dto/query-todo.dto';
@@ -60,7 +67,7 @@ describe('TodosController', () => {
         title: 'New Todo',
         description: 'Description',
       };
-      service.create.mockResolvedValue({ ...mockTodo, ...dto });
+      service.create.mockResolvedValue({ ...mockTodo, ...dto } as any);
 
       const result = await controller.create(mockReq, dto);
 
@@ -102,7 +109,7 @@ describe('TodosController', () => {
   describe('PATCH /todos/:id', () => {
     it('should update a todo', async () => {
       const dto: UpdateTodoDto = { title: 'Updated' };
-      service.update.mockResolvedValue({ ...mockTodo, ...dto });
+      service.update.mockResolvedValue({ ...mockTodo, ...dto } as any);
 
       const result = await controller.update(mockReq, 'todo-1', dto);
 

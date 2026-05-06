@@ -27,10 +27,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  async create(
-    @Req() req: RequestWithUser,
-    @Body() dto: CreateCategoryDto,
-  ) {
+  async create(@Req() req: RequestWithUser, @Body() dto: CreateCategoryDto) {
     return this.categoryService.create(req.user.sub, dto);
   }
 

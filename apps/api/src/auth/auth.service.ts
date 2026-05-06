@@ -48,11 +48,12 @@ export class AuthService {
       return null;
     }
 
-    const { password: _, ...result } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...result } = user;
     return result;
   }
 
-  async login(user: { id: string; email: string }) {
+  login(user: { id: string; email: string }) {
     const payload = { sub: user.id, email: user.email };
     return {
       accessToken: this.jwtService.sign(payload),

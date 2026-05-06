@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   NotFoundException,
   ForbiddenException,
   ConflictException,
 } from '@nestjs/common';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep } from 'jest-mock-extended';
 
 // Mock PrismaClient before any imports that depend on it
 jest.mock('@prisma/client', () => ({
@@ -18,7 +19,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 
 describe('CategoryService', () => {
   let service: CategoryService;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let prisma: any;
 
   const userId = 'user-123';
@@ -169,7 +170,11 @@ describe('CategoryService', () => {
 
       prisma.category.findUnique
         .mockResolvedValueOnce(mockCategory) // findOne call
-        .mockResolvedValueOnce({ ...mockCategory, id: 'cat-2', name: 'Conflicting Name' }); // conflict check
+        .mockResolvedValueOnce({
+          ...mockCategory,
+          id: 'cat-2',
+          name: 'Conflicting Name',
+        }); // conflict check
 
       await expect(service.update(userId, 'cat-1', dto)).rejects.toThrow(
         ConflictException,

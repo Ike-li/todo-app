@@ -1,11 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep } from 'jest-mock-extended';
 
 // Mock PrismaClient before any imports that depend on it
 jest.mock('@prisma/client', () => ({
   PrismaClient: class MockPrismaClient {},
-  Priority: { NONE: 'NONE', LOW: 'LOW', MEDIUM: 'MEDIUM', HIGH: 'HIGH', URGENT: 'URGENT' },
+  Priority: {
+    NONE: 'NONE',
+    LOW: 'LOW',
+    MEDIUM: 'MEDIUM',
+    HIGH: 'HIGH',
+    URGENT: 'URGENT',
+  },
 }));
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -17,7 +24,7 @@ import { ReorderTodosDto } from './dto/reorder-todo.dto';
 
 describe('TodosService', () => {
   let service: TodosService;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let prisma: any;
 
   const userId = 'user-123';

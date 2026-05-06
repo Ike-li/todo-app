@@ -53,9 +53,7 @@ export class CategoryService {
     }
 
     if (category.userId !== userId) {
-      throw new ForbiddenException(
-        'You do not have access to this category',
-      );
+      throw new ForbiddenException('You do not have access to this category');
     }
 
     return category;
