@@ -1,22 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { View, StyleSheet, ScrollView, Share } from "react-native";
 import { Card, Text, Divider, Button, List, useTheme, type MD3Theme } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../src/hooks/useAuth";
-import { useAuthStore } from "../../src/stores/auth.store";
 import { useTodos } from "../../src/hooks/useTodos";
+import { localUser } from "../../src/services/local-data";
 import type { TodoResponse } from "@todo-app/shared";
-
-function decodeJwtPayload(token: string): Record<string, unknown> | null {
-  try {
-    const payload = token.split(".")[1];
-    if (!payload) return null;
-    const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
-    return JSON.parse(decoded);
-  } catch {
-    return null;
-  }
-}
 
 export default function ProfileScreen() {
   const theme = useTheme();
@@ -24,15 +13,24 @@ export default function ProfileScreen() {
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { logout } = useAuth();
   const router = useRouter();
-  const token = useAuthStore((state) => state.token);
+  const [userName, setUserName] = useState("User");
+  const [userEmail, setUserEmail] = useState("Unknown");
   const { todos } = useTodos();
   const totalCount = todos.length;
   const completedCount = todos.filter((t: TodoResponse) => t.completed).length;
   const pendingCount = totalCount - completedCount;
 
-  const payload = token ? decodeJwtPayload(token) : null;
-  const email = (payload?.email as string) || "Unknown";
-  const name = (payload?.name as string) || "User";
+  useEffect(() => {
+    localUser.getMe().then((user) => {
+      if (user) {
+        setUserName(user.name || "User");
+        setUserEmail(user.email);
+      }
+    });
+  }, []);
+
+  const email = userEmail;
+  const name = userName;
 
   const handleLogout = async () => {
     await logout();

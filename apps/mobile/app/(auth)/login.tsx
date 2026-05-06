@@ -25,8 +25,8 @@ export default function LoginScreen() {
         password,
       });
       router.replace("/");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+    } catch {
+      setError("邮箱或密码错误");
     }
   };
 

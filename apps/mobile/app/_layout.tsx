@@ -5,7 +5,7 @@ import { useColorScheme } from "../components/useColorScheme";
 import { LightColors, DarkColors } from "../constants/Colors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
-import { getToken } from "../src/services/api-client";
+import { localUser } from "../src/services/local-data";
 import { useAuthStore } from "../src/stores/auth.store";
 
 export { ErrorBoundary } from "expo-router";
@@ -41,12 +41,12 @@ export default function RootLayout() {
   useEffect(() => {
     async function checkAuth() {
       try {
-        const token = await getToken();
-        if (token) {
-          setToken(token);
+        const user = await localUser.getMe();
+        if (user) {
+          setToken(user.id);
         }
       } catch {
-        // Token check failed, user is not logged in
+        // User check failed, user is not logged in
       } finally {
         setIsReady(true);
         SplashScreen.hideAsync();
