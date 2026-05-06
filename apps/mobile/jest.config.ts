@@ -2,6 +2,9 @@ import type { Config } from "jest";
 
 const config: Config = {
   preset: "jest-expo",
+  // The React Native test environment leaks timers/handles that prevent
+  // Jest from exiting cleanly. This is a known issue with jest-expo.
+  forceExit: true,
   // setupFilesAfterEnv runs AFTER the test framework is installed,
   // so it doesn't need to be transformed by Babel
   // (unlike setupFiles which runs BEFORE and needs transformation)

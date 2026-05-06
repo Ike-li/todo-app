@@ -93,7 +93,7 @@ describe('TodosService', () => {
         .mockResolvedValueOnce({ id: 'tag-2', name: 'urgent' });
       prisma.todo.create.mockResolvedValue({ ...mockTodo, ...dto });
 
-      const result = await service.create(userId, dto);
+      await service.create(userId, dto);
 
       expect(prisma.tag.upsert).toHaveBeenCalledTimes(2);
       expect(prisma.todo.create).toHaveBeenCalled();
@@ -346,9 +346,9 @@ describe('TodosService', () => {
     it('should throw if parent todo not found', async () => {
       prisma.todo.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.getSubTasks(userId, 'nonexistent'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.getSubTasks(userId, 'nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

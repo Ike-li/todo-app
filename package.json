@@ -12,9 +12,12 @@
     "lint": "turbo run lint",
     "db:migrate": "pnpm --filter @todo-app/api exec prisma migrate dev",
     "db:seed": "pnpm --filter @todo-app/api exec prisma db seed",
-    "db:studio": "pnpm --filter @todo-app/api exec prisma studio"
+    "db:studio": "pnpm --filter @todo-app/api exec prisma studio",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "turbo": "^2"
   },
   "packageManager": "pnpm@10.32.1",
@@ -31,5 +34,10 @@
       "postcss": ">=8.5.10",
       "@tootallnate/once": ">=3.0.1"
     }
+  },
+  "lint-staged": {
+    "apps/api/**/*.{ts,tsx}": [
+      "pnpm --filter api lint"
+    ]
   }
 }
