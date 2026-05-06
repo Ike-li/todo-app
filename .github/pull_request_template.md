@@ -1,17 +1,17 @@
-## Summary
+## 概要
 
-<!-- Brief description of what this PR does -->
+<!-- 简要描述本 PR 做了什么 -->
 
-## Changes
+## 变更内容
 
 -
 
-## Test plan
+## 测试计划
 
-- [ ] Unit tests pass
-- [ ] E2E tests pass
-- [ ] Manual testing completed
+- [ ] 单元测试通过
+- [ ] E2E 测试通过
+- [ ] 手动测试完成
 
-## Screenshots (if applicable)
+## 截图（如适用）
 
-<!-- Add screenshots for UI changes -->
+<!-- 如有 UI 变更请添加截图 -->
