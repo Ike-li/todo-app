@@ -31,3 +31,12 @@ tests/__pycache__/
 tests/**/__pycache__/
 .pytest_cache/
 tests/.pytest_cache/
+
+# AI smoke tests
+.ai-smoke/
+
+# oh-my-claudecode state
+.omc/
+
+# Test coverage
+coverage/
