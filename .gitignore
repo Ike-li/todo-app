@@ -27,3 +27,7 @@ apps/mobile/web-build/
 # OS
 .DS_Store
 Thumbs.db
+tests/__pycache__/
+tests/**/__pycache__/
+.pytest_cache/
+tests/.pytest_cache/

@@ -1,0 +1,11 @@
+local:
+  base_url: "http://localhost:3000"
+  email: "test@example.com"
+  password: "testpassword123"
+  name: "Test User"
+
+staging:
+  base_url: "https://api-staging.todo-app.com"
+  email: "test@staging.com"
+  password: "stagingpass123"
+  name: "Test User"

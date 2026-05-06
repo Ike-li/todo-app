@@ -62,7 +62,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse({ status: 200, description: 'Returns current user info' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  getMe(@Req() req: { user: { id: string; email: string } }) {
-    return req.user;
+  getMe(@Req() req: { user: { sub: string; email: string } }) {
+    return { id: req.user.sub, email: req.user.email };
   }
 }

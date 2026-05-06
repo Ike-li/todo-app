@@ -102,12 +102,12 @@ describe('AuthController', () => {
   describe('GET /auth/me', () => {
     it('should return user when authenticated', () => {
       const mockReq = {
-        user: { id: 'user-1', email: 'test@example.com' },
+        user: { sub: 'user-1', email: 'test@example.com' },
       };
 
       const result = controller.getMe(mockReq);
 
-      expect(result).toEqual(mockReq.user);
+      expect(result).toEqual({ id: 'user-1', email: 'test@example.com' });
     });
 
     it('should return 401 when no token provided', async () => {
