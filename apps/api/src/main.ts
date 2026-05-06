@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import type { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
@@ -41,6 +42,23 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Todo App API')
+    .setDescription(
+      'REST API for managing todos with categories, tags, priorities, and sub-tasks',
+    )
+    .setVersion('1.0')
+    .addBearerAuth()
+    .addTag('health', 'Health check endpoint')
+    .addTag('auth', 'Authentication endpoints')
+    .addTag('todos', 'Todo CRUD operations')
+    .addTag('categories', 'Category management')
+    .addTag('tags', 'Tag management')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -62,6 +62,10 @@ todo-app/
 | `pnpm db:studio` | Open Prisma Studio to browse the database|
 | `pnpm lint`      | Lint all packages                        |
 
+## API Documentation
+
+Interactive Swagger docs are available at `http://localhost:3000/api/docs` when the API server is running.
+
 ## E2E Tests
 
 Mobile E2E tests use [Maestro](https://maestro.mobile.dev/).
