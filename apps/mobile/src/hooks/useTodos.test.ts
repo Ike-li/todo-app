@@ -87,6 +87,7 @@ describe("useTodos", () => {
         createdAt: "2024-01-03T00:00:00.000Z",
         updatedAt: "2024-01-03T00:00:00.000Z",
       };
+      mockTodoService.fetchTodos.mockResolvedValue(mockTodoListResponse);
       mockTodoService.createTodo.mockResolvedValueOnce(newTodo);
 
       const { result } = renderHook(() => useTodos(), {
@@ -133,6 +134,7 @@ describe("useTodos", () => {
 
   describe("useDeleteTodo", () => {
     it("should delete a todo", async () => {
+      mockTodoService.fetchTodos.mockResolvedValue(mockTodoListResponse);
       mockTodoService.deleteTodo.mockResolvedValueOnce(undefined);
 
       const { result } = renderHook(() => useTodos(), {

@@ -232,7 +232,7 @@ describe("TodoItem", () => {
 
   it("should call onLongPress with todo id when long pressed", () => {
     const onLongPress = jest.fn();
-    const { UNSAFE_getAllByType } = render(
+    const { getByTestId } = render(
       <TodoItem
         todo={mockTodo}
         onToggle={jest.fn()}
@@ -242,14 +242,7 @@ describe("TodoItem", () => {
       />
     );
 
-    // The outermost Pressable has the onLongPress handler
-    // Pressable is the first element wrapping the List.Item
-    const pressables = UNSAFE_getAllByType(
-      require("react-native").Pressable
-    );
-    // The outermost Pressable should have the long press handler
-    const outerPressable = pressables[0];
-    fireEvent(outerPressable, "longPress");
+    fireEvent(getByTestId("todo-item"), "longPress");
 
     expect(onLongPress).toHaveBeenCalledWith("1");
   });

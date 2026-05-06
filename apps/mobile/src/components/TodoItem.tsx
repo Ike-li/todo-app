@@ -73,6 +73,7 @@ function TodoItemComponent({ todo, onToggle, onPress, onMoveUp, onMoveDown, onLo
     >
       <List.Item
         testID={testID}
+        onLongPress={onLongPress ? () => onLongPress(todo.id) : undefined}
         style={[
           selected ? styles.selectedItem : undefined,
         ]}

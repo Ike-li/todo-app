@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent, waitFor } from "@testing-library/react-native";
+import { render, fireEvent, waitFor, act } from "@testing-library/react-native";
 import { TodoForm } from "./TodoForm";
 import { useCategories } from "../hooks/useCategories";
 import { useTags } from "../hooks/useTags";
@@ -80,15 +80,15 @@ describe("TodoForm", () => {
   });
 
   it("should render category selector", () => {
-    const { getByText } = render(
+    const { getAllByText } = render(
       <TodoForm onSubmit={jest.fn()} />
     );
 
-    expect(getByText("Category")).toBeTruthy();
+    expect(getAllByText("Category").length).toBeGreaterThan(0);
   });
 
   it("should render tags section", () => {
-    const { getByPlaceholderText } = render(
+    const { getByText, getByPlaceholderText } = render(
       <TodoForm onSubmit={jest.fn()} />
     );
 
@@ -207,8 +207,9 @@ describe("TodoForm", () => {
     );
 
     fireEvent.changeText(getByPlaceholderText("Title"), "New Todo");
-    fireEvent.press(getByText("High"));
 
+    // Select priority and submit
+    fireEvent.press(getByText("High"));
     fireEvent.press(getByText("Create"));
 
     await waitFor(() => {
@@ -217,10 +218,16 @@ describe("TodoForm", () => {
       );
     });
 
-    // Reset for deselection test
-    onSubmit.mockClear();
+    // Wait for form state to flush after submission
+    await act(async () => {});
 
-    // Press High again to deselect
+    // Re-enter title (form was cleared after submission)
+    fireEvent.changeText(getByPlaceholderText("Title"), "New Todo");
+
+    // Deselect: press High once to set priority (undefined -> HIGH),
+    // then press High again to deselect (HIGH -> undefined)
+    onSubmit.mockClear();
+    fireEvent.press(getByText("High"));
     fireEvent.press(getByText("High"));
     fireEvent.press(getByText("Create"));
 
@@ -325,8 +332,9 @@ describe("TodoForm", () => {
       <TodoForm onSubmit={jest.fn()} />
     );
 
-    // Press the category selector anchor
-    fireEvent.press(getByText("Select a category (optional)"));
+    // Press the category selector anchor (the Pressable wrapping the TextInput)
+    const categoryInput = getByPlaceholderText("Select a category (optional)");
+    fireEvent.press(categoryInput);
 
     await waitFor(() => {
       expect(getByText("Work")).toBeTruthy();

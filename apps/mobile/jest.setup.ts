@@ -60,10 +60,10 @@ jest.mock("react-native-paper", () => {
         React.createElement(Text, null, status === "checked" ? "checked" : "unchecked")
       ),
     List: {
-      Item: ({ title, description, onPress, left, right, ...props }: any) => {
+      Item: ({ title, description, onPress, onLongPress, left, right, style, ...props }: any) => {
         const titleContent = typeof title === 'function' ? title() : title;
         const descContent = typeof description === 'function' ? description() : description;
-        return React.createElement(Pressable, { onPress, testID: props.testID },
+        return React.createElement(Pressable, { onPress, onLongPress, testID: props.testID, style },
           left ? left({}) : null,
           React.createElement(View, null,
             titleContent,
@@ -101,15 +101,23 @@ jest.mock("react-native-paper", () => {
       React.createElement(Pressable, { onPress: disabled ? undefined : onPress, testID: props.testID },
         React.createElement(Text, null, icon),
       ),
-    Menu: ({ children, visible, anchor }: any) =>
-      React.createElement(View, null,
-        anchor || null,
-        visible ? children : null,
-      ),
-    'Menu.Item': ({ title, onPress, disabled }: any) =>
-      React.createElement(Pressable, { onPress: disabled ? undefined : onPress },
-        React.createElement(Text, null, title),
-      ),
+    Icon: ({ source, size, color, ...props }: any) =>
+      React.createElement(Text, { testID: `icon-${source}`, ...props }, source),
+    ...(() => {
+      const MenuItem = ({ title, onPress, disabled }: any) =>
+        React.createElement(Pressable, { onPress: disabled ? undefined : onPress },
+          React.createElement(Text, null, title),
+        );
+      const MenuComponent = Object.assign(
+        ({ children, visible, anchor }: any) =>
+          React.createElement(View, null,
+            anchor || null,
+            visible ? children : null,
+          ),
+        { Item: MenuItem }
+      );
+      return { Menu: MenuComponent, 'Menu.Item': MenuItem };
+    })(),
     Divider: () => React.createElement(View, null),
     useTheme: () => ({
       colors: {
