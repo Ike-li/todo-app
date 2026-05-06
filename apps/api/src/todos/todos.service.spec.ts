@@ -128,7 +128,7 @@ describe('TodosService', () => {
         }),
       );
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].userId).toBe(userId);
+      expect(result.data[0].title).toBe('Test Todo');
     });
 
     it('should support pagination', async () => {
@@ -203,7 +203,9 @@ describe('TodosService', () => {
 
       const result = await service.findOne(userId, 'todo-1');
 
-      expect(result).toEqual(mockTodo);
+      expect(result.id).toBe('todo-1');
+      expect(result.title).toBe('Test Todo');
+      expect(result.completed).toBe(false);
     });
 
     it('should throw NotFoundException when todo not found', async () => {

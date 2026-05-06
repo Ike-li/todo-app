@@ -100,7 +100,7 @@ describe('CategoryService', () => {
         orderBy: { name: 'asc' },
       });
       expect(result).toHaveLength(1);
-      expect(result[0].userId).toBe(userId);
+      expect(result[0].name).toBe('Work');
     });
 
     it('should return empty array when no categories exist', async () => {
@@ -118,7 +118,9 @@ describe('CategoryService', () => {
 
       const result = await service.findOne(userId, 'cat-1');
 
-      expect(result).toEqual(mockCategory);
+      expect(result.id).toBe('cat-1');
+      expect(result.name).toBe('Work');
+      expect(result.color).toBe('#ff0000');
     });
 
     it('should throw NotFoundException when category not found', async () => {
@@ -227,7 +229,8 @@ describe('CategoryService', () => {
       expect(prisma.category.delete).toHaveBeenCalledWith({
         where: { id: 'cat-1' },
       });
-      expect(result).toEqual(mockCategory);
+      expect(result.id).toBe('cat-1');
+      expect(result.name).toBe('Work');
     });
   });
 });

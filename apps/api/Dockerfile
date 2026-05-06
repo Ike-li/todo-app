@@ -18,6 +18,8 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
+RUN addgroup -g 1001 -S appgroup && adduser -S appuser -u 1001
+
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/ ./packages/
 COPY apps/api/package.json ./apps/api/package.json
@@ -28,5 +30,10 @@ RUN pnpm install --frozen-lockfile --prod
 WORKDIR /app/apps/api
 
 EXPOSE 3000
+
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 CMD ["node", "dist/main"]

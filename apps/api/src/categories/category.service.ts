@@ -4,15 +4,25 @@ import {
   ForbiddenException,
   ConflictException,
 } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { Category } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CategoryResponseDto } from './dto/response-category.dto';
 
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: string, dto: CreateCategoryDto) {
+  private toResponseDto(category: Category): CategoryResponseDto {
+    return plainToInstance(CategoryResponseDto, category);
+  }
+
+  async create(
+    userId: string,
+    dto: CreateCategoryDto,
+  ): Promise<CategoryResponseDto> {
     const existing = await this.prisma.category.findUnique({
       where: {
         userId_name: {
@@ -28,22 +38,26 @@ export class CategoryService {
       );
     }
 
-    return this.prisma.category.create({
+    const category = await this.prisma.category.create({
       data: {
         ...dto,
         user: { connect: { id: userId } },
       },
     });
+
+    return this.toResponseDto(category);
   }
 
-  async findAll(userId: string) {
-    return this.prisma.category.findMany({
+  async findAll(userId: string): Promise<CategoryResponseDto[]> {
+    const categories = await this.prisma.category.findMany({
       where: { userId },
       orderBy: { name: 'asc' },
     });
+
+    return categories.map((cat) => this.toResponseDto(cat));
   }
 
-  async findOne(userId: string, id: string) {
+  async findOne(userId: string, id: string): Promise<CategoryResponseDto> {
     const category = await this.prisma.category.findUnique({
       where: { id },
     });
@@ -56,10 +70,14 @@ export class CategoryService {
       throw new ForbiddenException('You do not have access to this category');
     }
 
-    return category;
+    return this.toResponseDto(category);
   }
 
-  async update(userId: string, id: string, dto: UpdateCategoryDto) {
+  async update(
+    userId: string,
+    id: string,
+    dto: UpdateCategoryDto,
+  ): Promise<CategoryResponseDto> {
     await this.findOne(userId, id);
 
     if (dto.name) {
@@ -79,17 +97,21 @@ export class CategoryService {
       }
     }
 
-    return this.prisma.category.update({
+    const category = await this.prisma.category.update({
       where: { id },
       data: dto,
     });
+
+    return this.toResponseDto(category);
   }
 
-  async remove(userId: string, id: string) {
+  async remove(userId: string, id: string): Promise<CategoryResponseDto> {
     await this.findOne(userId, id);
 
-    return this.prisma.category.delete({
+    const category = await this.prisma.category.delete({
       where: { id },
     });
+
+    return this.toResponseDto(category);
   }
 }
