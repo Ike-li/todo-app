@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import { View, StyleSheet, FlatList, RefreshControl, Alert } from "react-native";
 import {
   FAB,

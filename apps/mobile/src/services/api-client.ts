@@ -29,11 +29,6 @@ export async function removeToken(): Promise<void> {
   await SecureStore.deleteItemAsync(TOKEN_KEY);
 }
 
-interface ApiResponse<T> {
-  data: T;
-  status: number;
-}
-
 async function request<T>(
   endpoint: string,
   options: RequestInit = {},

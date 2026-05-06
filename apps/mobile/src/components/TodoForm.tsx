@@ -7,7 +7,6 @@ import {
   Chip,
   Text,
   Menu,
-  Divider,
   IconButton,
 } from "react-native-paper";
 import { useCategories } from "../hooks/useCategories";

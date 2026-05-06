@@ -38,6 +38,12 @@
   "lint-staged": {
     "apps/api/**/*.{ts,tsx}": [
       "pnpm --filter api lint"
+    ],
+    "apps/mobile/**/*.{ts,tsx}": [
+      "pnpm --filter @todo-app/mobile lint"
+    ],
+    "packages/shared/**/*.ts": [
+      "pnpm --filter @todo-app/shared lint"
     ]
   }
 }
