@@ -42,6 +42,7 @@ export class TodosController {
   @ApiOperation({ summary: 'Create a new todo' })
   @ApiResponse({ status: 201, description: 'Todo created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid input' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(@Req() req: RequestWithUser, @Body() dto: CreateTodoDto) {
     return this.todosService.create(req.user.sub, dto);
   }
@@ -85,9 +86,17 @@ export class TodosController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a todo' })
+  @ApiOperation({
+    summary: 'Update a todo',
+    description:
+      'Pass null to clear optional fields (description, dueDate, categoryId, parentId). Pass tags: [] to remove all tags. Omit fields to leave them unchanged.',
+  })
   @ApiParam({ name: 'id', description: 'Todo UUID' })
   @ApiResponse({ status: 200, description: 'Todo updated' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden (e.g., parentId references self)',
+  })
   @ApiResponse({ status: 404, description: 'Todo not found' })
   async update(
     @Req() req: RequestWithUser,
@@ -111,7 +120,10 @@ export class TodosController {
 
   @Delete(':id')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Delete a todo' })
+  @ApiOperation({
+    summary: 'Delete a todo',
+    description: 'Deleting a parent todo will cascade-delete all sub-tasks.',
+  })
   @ApiParam({ name: 'id', description: 'Todo UUID' })
   @ApiResponse({ status: 200, description: 'Todo deleted' })
   @ApiResponse({ status: 404, description: 'Todo not found' })
@@ -119,6 +131,7 @@ export class TodosController {
     @Req() req: RequestWithUser,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return this.todosService.remove(req.user.sub, id);
+    await this.todosService.remove(req.user.sub, id);
+    return { message: 'Todo deleted successfully' };
   }
 }

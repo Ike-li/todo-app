@@ -28,7 +28,11 @@ export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new tag' })
+  @ApiOperation({
+    summary: 'Create a new tag',
+    description:
+      'Tags are global (shared across all users). Name is normalized to lowercase and trimmed.',
+  })
   @ApiResponse({ status: 201, description: 'Tag created' })
   @ApiResponse({ status: 409, description: 'Tag already exists' })
   async create(@Body() dto: CreateTagDto) {
@@ -53,11 +57,20 @@ export class TagController {
 
   @Delete(':id')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Delete a tag' })
+  @ApiOperation({
+    summary: 'Delete a tag',
+    description:
+      'Fails with 409 if the tag is still attached to any todos. Remove the tag from all todos first.',
+  })
   @ApiParam({ name: 'id', description: 'Tag UUID' })
   @ApiResponse({ status: 200, description: 'Tag deleted' })
   @ApiResponse({ status: 404, description: 'Tag not found' })
+  @ApiResponse({
+    status: 409,
+    description: 'Tag is still in use by one or more todos',
+  })
   async remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tagService.remove(id);
+    await this.tagService.remove(id);
+    return { message: 'Tag deleted successfully' };
   }
 }

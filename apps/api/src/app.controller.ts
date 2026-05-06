@@ -15,4 +15,12 @@ export class AppController {
   getHealth() {
     return this.appService.getHealth();
   }
+
+  @SkipThrottle()
+  @Get('health/db')
+  @ApiOperation({ summary: 'Database health check' })
+  @ApiResponse({ status: 200, description: 'Database connection status' })
+  async getDbHealth() {
+    return this.appService.getDbHealth();
+  }
 }

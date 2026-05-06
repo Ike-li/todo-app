@@ -76,7 +76,7 @@ describe('TagController', () => {
       const result = await controller.remove('tag-1');
 
       expect(service.remove).toHaveBeenCalledWith('tag-1');
-      expect(result).toEqual(mockTag);
+      expect(result).toEqual({ message: 'Tag deleted successfully' });
     });
   });
 });

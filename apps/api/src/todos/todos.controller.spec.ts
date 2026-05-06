@@ -125,7 +125,7 @@ describe('TodosController', () => {
       const result = await controller.remove(mockReq, 'todo-1');
 
       expect(service.remove).toHaveBeenCalledWith(userId, 'todo-1');
-      expect(result).toEqual(mockTodo);
+      expect(result).toEqual({ message: 'Todo deleted successfully' });
     });
   });
 

@@ -102,7 +102,7 @@ describe('CategoryController', () => {
       const result = await controller.remove(mockReq, 'cat-1');
 
       expect(service.remove).toHaveBeenCalledWith(userId, 'cat-1');
-      expect(result).toEqual(mockCategory);
+      expect(result).toEqual({ message: 'Category deleted successfully' });
     });
   });
 });

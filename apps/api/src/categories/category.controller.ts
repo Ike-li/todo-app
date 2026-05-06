@@ -78,7 +78,11 @@ export class CategoryController {
 
   @Delete(':id')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Delete a category' })
+  @ApiOperation({
+    summary: 'Delete a category',
+    description:
+      'Todos in this category will have their categoryId set to null (not deleted).',
+  })
   @ApiParam({ name: 'id', description: 'Category UUID' })
   @ApiResponse({ status: 200, description: 'Category deleted' })
   @ApiResponse({ status: 404, description: 'Category not found' })
@@ -86,6 +90,7 @@ export class CategoryController {
     @Req() req: RequestWithUser,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return this.categoryService.remove(req.user.sub, id);
+    await this.categoryService.remove(req.user.sub, id);
+    return { message: 'Category deleted successfully' };
   }
 }

@@ -12,6 +12,18 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableShutdownHooks();
 
+  // Validate production secrets
+  if (
+    process.env.NODE_ENV === 'production' &&
+    (!process.env.JWT_SECRET ||
+      process.env.JWT_SECRET === 'dev-secret-change-in-production')
+  ) {
+    console.error(
+      'WARNING: JWT_SECRET is not set or using default value in production!',
+    );
+    process.exit(1);
+  }
+
   // Compression middleware (before request logging so responses are compressed)
   app.use(compression());
 
