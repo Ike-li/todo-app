@@ -70,7 +70,9 @@ describe("useTodos", () => {
         expect(result.current.todosQuery.isSuccess).toBe(true);
       });
 
-      expect(result.current.todosQuery.data).toEqual(mockTodoListResponse);
+      expect(result.current.todos).toEqual(mockTodos);
+      expect(result.current.total).toBe(2);
+      expect(result.current.todosQuery.data?.pages[0]).toEqual(mockTodoListResponse);
       expect(mockTodoService.fetchTodos).toHaveBeenCalledWith(1, 20);
     });
   });

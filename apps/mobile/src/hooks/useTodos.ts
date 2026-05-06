@@ -1,4 +1,5 @@
 import {
+  useInfiniteQuery,
   useQuery,
   useMutation,
   useQueryClient,
@@ -16,15 +17,24 @@ import {
 } from "../services/todo.service";
 import type { TodoCreate, TodoUpdate, TodoResponse } from "@todo-app/shared";
 
-export function useTodos(page = 1, limit = 20) {
+export function useTodos(limit = 20) {
   const queryClient = useQueryClient();
 
-  const todosQuery = useQuery({
-    queryKey: ["todos", page, limit],
-    queryFn: () => fetchTodos(page, limit),
+  const todosQuery = useInfiniteQuery({
+    queryKey: ["todos"],
+    queryFn: ({ pageParam = 1 }) => fetchTodos(pageParam, limit),
+    getNextPageParam: (lastPage, allPages) => {
+      const totalPages = Math.ceil(lastPage.total / lastPage.limit);
+      return allPages.length < totalPages ? allPages.length + 1 : undefined;
+    },
+    initialPageParam: 1,
     staleTime: 30 * 1000, // 30 seconds
     gcTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Flatten all pages into a single array
+  const todos = todosQuery.data?.pages.flatMap(page => page.data) || [];
+  const total = todosQuery.data?.pages[0]?.total || 0;
 
   const createTodo = useMutation({
     mutationFn: (input: TodoCreate) => createTodoApi(input),
@@ -40,33 +50,33 @@ export function useTodos(page = 1, limit = 20) {
       await queryClient.cancelQueries({ queryKey: ["todos"] });
 
       // Snapshot the previous value
-      const previousTodos = queryClient.getQueryData(["todos", page, limit]);
+      const previousData = queryClient.getQueryData(["todos"]);
 
-      // Optimistically update
+      // Optimistically update across all pages
       queryClient.setQueryData(
-        ["todos", page, limit],
-        (old: { data: TodoResponse[] } | undefined) => {
+        ["todos"],
+        (old: { pages: { data: TodoResponse[] }[] } | undefined) => {
           if (!old) return old;
           return {
             ...old,
-            data: old.data.map((todo: TodoResponse) =>
-              todo.id === id
-                ? { ...todo, completed: !todo.completed }
-                : todo
-            ),
+            pages: old.pages.map(page => ({
+              ...page,
+              data: page.data.map((todo: TodoResponse) =>
+                todo.id === id
+                  ? { ...todo, completed: !todo.completed }
+                  : todo
+              ),
+            })),
           };
         }
       );
 
-      return { previousTodos };
+      return { previousData };
     },
     onError: (_err, _id, context) => {
       // Rollback on error
-      if (context?.previousTodos) {
-        queryClient.setQueryData(
-          ["todos", page, limit],
-          context.previousTodos
-        );
+      if (context?.previousData) {
+        queryClient.setQueryData(["todos"], context.previousData);
       }
     },
     onSettled: () => {
@@ -99,6 +109,8 @@ export function useTodos(page = 1, limit = 20) {
 
   return {
     todosQuery,
+    todos,
+    total,
     createTodo,
     toggleTodo,
     deleteTodo,

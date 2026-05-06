@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useDebouncedValue } from "../../src/hooks/useDebouncedValue";
-import { View, StyleSheet, FlatList, RefreshControl, Alert } from "react-native";
+import { View, StyleSheet, FlatList, RefreshControl, Alert, ActivityIndicator } from "react-native";
 import { FAB, Searchbar, SegmentedButtons, Text, useTheme, Button } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useTodos } from "../../src/hooks/useTodos";
@@ -17,9 +17,8 @@ export default function TodoListScreen() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const router = useRouter();
-  const { todosQuery, toggleTodo, deleteTodo, reorderTodos } = useTodos();
+  const { todosQuery, todos, toggleTodo, deleteTodo, reorderTodos } = useTodos();
 
-  const todos = todosQuery.data?.data || [];
   const isRefreshing = todosQuery.isFetching && !todosQuery.isLoading;
 
   const sortedTodos = [...todos].sort(
@@ -226,6 +225,17 @@ export default function TodoListScreen() {
           maxToRenderPerBatch={10}
           windowSize={5}
           initialNumToRender={10}
+          onEndReached={() => {
+            if (todosQuery.hasNextPage && !todosQuery.isFetchingNextPage) {
+              todosQuery.fetchNextPage();
+            }
+          }}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            todosQuery.isFetchingNextPage ? (
+              <ActivityIndicator style={styles.footerLoader} size="small" />
+            ) : null
+          }
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -318,5 +328,8 @@ const styles = StyleSheet.create({
   batchButton: {
     flex: 1,
     marginHorizontal: 6,
+  },
+  footerLoader: {
+    paddingVertical: 16,
   },
 });

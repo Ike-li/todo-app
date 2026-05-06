@@ -81,6 +81,37 @@ describe('TodosService', () => {
       expect(result.title).toBe(dto.title);
       expect(result.description).toBe(dto.description);
     });
+
+    it('should create a todo with tags', async () => {
+      const dto: CreateTodoDto = {
+        title: 'Tagged Todo',
+        tags: ['work', 'urgent'],
+      };
+
+      prisma.tag.upsert
+        .mockResolvedValueOnce({ id: 'tag-1', name: 'work' })
+        .mockResolvedValueOnce({ id: 'tag-2', name: 'urgent' });
+      prisma.todo.create.mockResolvedValue({ ...mockTodo, ...dto });
+
+      const result = await service.create(userId, dto);
+
+      expect(prisma.tag.upsert).toHaveBeenCalledTimes(2);
+      expect(prisma.todo.create).toHaveBeenCalled();
+    });
+
+    it('should skip empty tag names', async () => {
+      const dto: CreateTodoDto = {
+        title: 'Tagged Todo',
+        tags: ['work', '', '  '],
+      };
+
+      prisma.tag.upsert.mockResolvedValue({ id: 'tag-1', name: 'work' });
+      prisma.todo.create.mockResolvedValue({ ...mockTodo, ...dto });
+
+      await service.create(userId, dto);
+
+      expect(prisma.tag.upsert).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('findAll', () => {
@@ -217,6 +248,22 @@ describe('TodosService', () => {
       });
       expect(result.title).toBe(dto.title);
     });
+
+    it('should replace tags on update', async () => {
+      const dto: UpdateTodoDto = { tags: ['new-tag'] };
+
+      prisma.todo.findUnique.mockResolvedValue(mockTodo);
+      prisma.tagsOnTodos.deleteMany.mockResolvedValue({ count: 1 });
+      prisma.tag.upsert.mockResolvedValue({ id: 'tag-new', name: 'new-tag' });
+      prisma.todo.update.mockResolvedValue(mockTodo);
+
+      await service.update(userId, 'todo-1', dto);
+
+      expect(prisma.tagsOnTodos.deleteMany).toHaveBeenCalledWith({
+        where: { todoId: 'todo-1' },
+      });
+      expect(prisma.tag.upsert).toHaveBeenCalled();
+    });
   });
 
   describe('toggle', () => {
@@ -269,6 +316,39 @@ describe('TodosService', () => {
         where: { id: 'todo-1' },
       });
       expect(result).toEqual(mockTodo);
+    });
+  });
+
+  describe('getSubTasks', () => {
+    it('should return sub-tasks for a parent todo', async () => {
+      const subTasks = [
+        { ...mockTodo, id: 'sub-1', parentId: 'todo-1' },
+        { ...mockTodo, id: 'sub-2', parentId: 'todo-1' },
+      ];
+
+      prisma.todo.findUnique.mockResolvedValue(mockTodo);
+      prisma.todo.findMany.mockResolvedValue(subTasks);
+
+      const result = await service.getSubTasks(userId, 'todo-1');
+
+      expect(prisma.todo.findUnique).toHaveBeenCalled();
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: { parentId: 'todo-1' },
+        include: {
+          category: true,
+          tags: { include: { tag: true } },
+        },
+        orderBy: { position: 'asc' },
+      });
+      expect(result).toHaveLength(2);
+    });
+
+    it('should throw if parent todo not found', async () => {
+      prisma.todo.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.getSubTasks(userId, 'nonexistent'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 

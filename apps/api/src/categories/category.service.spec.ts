@@ -196,6 +196,25 @@ describe('CategoryService', () => {
 
       expect(result.name).toBe('Work');
     });
+
+    it('should update without name and skip conflict check', async () => {
+      const dto: UpdateCategoryDto = {
+        color: '#00ff00',
+        icon: 'laptop',
+      };
+
+      prisma.category.findUnique.mockResolvedValueOnce(mockCategory); // findOne call only
+      prisma.category.update.mockResolvedValue({ ...mockCategory, ...dto });
+
+      const result = await service.update(userId, 'cat-1', dto);
+
+      expect(prisma.category.findUnique).toHaveBeenCalledTimes(1);
+      expect(prisma.category.update).toHaveBeenCalledWith({
+        where: { id: 'cat-1' },
+        data: dto,
+      });
+      expect(result.color).toBe('#00ff00');
+    });
   });
 
   describe('remove', () => {

@@ -25,9 +25,7 @@ export default function ProfileScreen() {
   const { logout } = useAuth();
   const router = useRouter();
   const token = useAuthStore((state) => state.token);
-  const { todosQuery } = useTodos();
-
-  const todos: TodoResponse[] = todosQuery.data?.data || [];
+  const { todos } = useTodos();
   const totalCount = todos.length;
   const completedCount = todos.filter((t: TodoResponse) => t.completed).length;
   const pendingCount = totalCount - completedCount;

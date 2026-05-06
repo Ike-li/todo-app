@@ -13,4 +13,7 @@ export default function globalSetup(): void {
   if (!process.env.JWT_SECRET) {
     process.env.JWT_SECRET = 'test-jwt-secret-e2e';
   }
+  // Disable rate limiting during E2E tests
+  process.env.THROTTLER_TTL = '1000000';
+  process.env.THROTTLER_LIMIT = '1000000';
 }
