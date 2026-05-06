@@ -1,121 +1,120 @@
-# Todo App
+# 待办事项应用
 
-A full-stack todo application built with a NestJS API backend and an Expo React Native mobile frontend. Manage tasks with categories, tags, priorities, and sub-tasks.
+一个全栈待办事项应用，包含 NestJS API 后端和 Expo React Native 移动端。支持分类、标签、优先级和子任务管理。
 
-## Tech Stack
+## 技术栈
 
-- **Backend**: NestJS, Prisma ORM, PostgreSQL
-- **Mobile**: Expo, React Native Paper, React Query, Zustand
-- **Monorepo**: Turborepo with pnpm workspaces
+- **后端**: NestJS, Prisma ORM, PostgreSQL
+- **移动端**: Expo, React Native Paper, React Query, Zustand
+- **Monorepo**: Turborepo + pnpm 工作空间
 
-## Prerequisites
+## 前置要求
 
 - Node.js 18+
 - pnpm (v10+)
 - PostgreSQL
 
-## Quick Start
+## 快速开始
 
 ```bash
-# Install dependencies
+# 安装依赖
 pnpm install
 
-# Set up environment variables
+# 配置环境变量
 cp .env.example .env
-# Edit .env with your database credentials
+# 编辑 .env 填写数据库连接信息
 
-# Run database migrations
+# 运行数据库迁移
 pnpm db:migrate
 
-# Seed the database with sample data
+# 填充示例数据
 pnpm db:seed
 
-# Start the API server
+# 启动 API 服务器
 pnpm dev:api
 
-# Start the mobile app (in a separate terminal)
+# 启动移动应用（另开一个终端）
 pnpm dev:mobile
 ```
 
-## Project Structure
+## 项目结构
 
 ```
 todo-app/
   apps/
-    api/        # NestJS REST API with Prisma
-    mobile/     # Expo React Native app
+    api/        # NestJS REST API + Prisma
+    mobile/     # Expo React Native 应用
   packages/
-    shared/     # Shared types, utilities, and constants
+    shared/     # 共享类型、工具和常量
 ```
 
-## Available Scripts
+## 可用脚本
 
-| Script           | Description                              |
-| ---------------- | ---------------------------------------- |
-| `pnpm dev`       | Run all apps in development mode         |
-| `pnpm dev:api`   | Run the API server in development mode   |
-| `pnpm dev:mobile`| Run the Expo mobile app in dev mode      |
-| `pnpm build`     | Build all packages and apps              |
-| `pnpm test`      | Run tests across all packages            |
-| `pnpm db:migrate`| Run Prisma database migrations           |
-| `pnpm db:seed`   | Seed the database with sample data       |
-| `pnpm db:studio` | Open Prisma Studio to browse the database|
-| `pnpm lint`      | Lint all packages                        |
+| 脚本              | 说明                        |
+| ----------------- | --------------------------- |
+| `pnpm dev`        | 开发模式运行所有应用        |
+| `pnpm dev:api`    | 开发模式运行 API 服务器     |
+| `pnpm dev:mobile` | 开发模式运行 Expo 移动应用  |
+| `pnpm build`      | 构建所有包和应用            |
+| `pnpm test`       | 运行所有包的测试            |
+| `pnpm db:migrate` | 运行 Prisma 数据库迁移      |
+| `pnpm db:seed`    | 填充示例数据                |
+| `pnpm db:studio`  | 打开 Prisma Studio 浏览数据库 |
+| `pnpm lint`       | 对所有包进行代码检查        |
 
-## API Documentation
+## API 文档
 
-Interactive Swagger docs are available at `http://localhost:3000/api/docs` when the API server is running.
+API 服务器运行后，可访问交互式 Swagger 文档: `http://localhost:3000/api/docs`
 
-## E2E Tests
+## E2E 测试
 
-Mobile E2E tests use [Maestro](https://maestro.mobile.dev/).
+移动端 E2E 测试使用 [Maestro](https://maestro.mobile.dev/)。
 
 ```bash
-# Install Maestro
+# 安装 Maestro
 curl -Ls "https://get.mobile.dev/install" | bash
 
-# Run all E2E tests (requires running API and mobile app)
+# 运行所有 E2E 测试（需要 API 和移动应用同时运行）
 pnpm test:mobile-e2e
 ```
 
-## API Smoke Tests
+## API 冒烟测试
 
-The project includes Python-based API smoke tests that verify the full request chain
-(auth → CRUD → cleanup) against a running API and database.
+项目包含基于 Python 的 API 冒烟测试，验证完整的请求链路（认证 → CRUD → 清理）。
 
 ```bash
-# Start PostgreSQL and API first
+# 先启动 PostgreSQL 和 API
 docker compose up -d postgres
 pnpm db:migrate
 pnpm --filter api build
 DATABASE_URL="postgresql://todo_user:todo_password@localhost:5432/todo_dev" JWT_SECRET="dev-secret" node apps/api/dist/src/main.js &
 
-# Run smoke tests
+# 运行冒烟测试
 pip install -r tests/requirements.txt
 pnpm test:smoke
 ```
 
-## Deployment
+## 部署
 
 ### API (Railway)
 
-1. Install the [Railway CLI](https://railway.app/cli)
-2. Login: `railway login`
-3. Create a project: `railway init`
-4. Add a PostgreSQL service: `railway add`
-5. Set environment variables:
-   - `DATABASE_URL` — from the PostgreSQL service
-   - `JWT_SECRET` — generate a secure secret
+1. 安装 [Railway CLI](https://railway.app/cli)
+2. 登录: `railway login`
+3. 创建项目: `railway init`
+4. 添加 PostgreSQL 服务: `railway add`
+5. 设置环境变量:
+   - `DATABASE_URL` — 来自 PostgreSQL 服务
+   - `JWT_SECRET` — 生成一个安全密钥
    - `JWT_EXPIRES_IN` — `7d`
-6. Deploy: `railway up`
+6. 部署: `railway up`
 
-Alternatively, use the Dockerfile at `apps/api/Dockerfile` with any Docker-compatible host.
+或者使用 `apps/api/Dockerfile` 在任意 Docker 兼容的主机上部署。
 
-### Mobile (EAS)
+### 移动端 (EAS)
 
-1. Install EAS CLI: `npm install -g eas-cli`
-2. Login: `eas login`
-3. Configure: `cd apps/mobile && eas build:configure`
-4. Update `EXPO_PUBLIC_API_URL` in `eas.json` to your deployed API URL
-5. Build: `eas build --platform all`
-6. Submit to stores: `eas submit`
+1. 安装 EAS CLI: `npm install -g eas-cli`
+2. 登录: `eas login`
+3. 配置: `cd apps/mobile && eas build:configure`
+4. 更新 `eas.json` 中的 `EXPO_PUBLIC_API_URL` 为你的 API 地址
+5. 构建: `eas build --platform all`
+6. 提交到应用商店: `eas submit`

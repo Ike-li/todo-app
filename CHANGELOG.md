@@ -1,85 +1,85 @@
-# Changelog
+# 更新日志
 
-## [Unreleased]
+## [未发布]
 
 ## [0.13.0] - 2026-05-06
-### Added
-- ESLint configuration for mobile and shared packages
-- .editorconfig for consistent formatting
-- useDebouncedValue hook tests
-- CONTRIBUTING.md guide
+### 新增
+- 移动端和共享包的 ESLint 配置
+- .editorconfig 统一格式化配置
+- useDebouncedValue 钩子测试
+- CONTRIBUTING.md 贡献指南
 
 ## [0.12.0] - 2026-05-06
-### Added
-- Husky pre-commit hooks with lint-staged
-- GitHub PR template
-### Fixed
-- Mobile test cleanup (forceExit + gcTime)
-- Unused variable lint error
+### 新增
+- Husky pre-commit 钩子 + lint-staged
+- GitHub PR 模板
+### 修复
+- 移动端测试清理（forceExit + gcTime）
+- 未使用变量的 lint 错误
 
 ## [0.11.0] - 2026-05-06
-### Added
-- API security: helmet, rate limiting, CORS configuration
-- Test coverage improvements (66 tests, todos.service 100% statements)
-- Mobile infinite scroll pagination (useInfiniteQuery)
-- ErrorFallback component
-### Fixed
-- All failing mobile tests after infinite scroll migration
+### 新增
+- API 安全加固: helmet、速率限制、CORS 配置
+- 测试覆盖率提升（66 个测试，todos.service 100% 语句覆盖）
+- 移动端无限滚动分页（useInfiniteQuery）
+- ErrorFallback 组件
+### 修复
+- 无限滚动迁移后所有失败的移动端测试
 
 ## [0.10.0] - 2026-05-06
-### Fixed
-- Mobile TypeScript errors (MD3Theme types, implicit any)
-- TodoItem component tests (19 cases)
-- TodoForm component tests (18 cases)
-### Added
-- CLAUDE.md project documentation
+### 修复
+- 移动端 TypeScript 错误（MD3Theme 类型、隐式 any）
+- TodoItem 组件测试（19 个用例）
+- TodoForm 组件测试（18 个用例）
+### 新增
+- CLAUDE.md 项目文档
 
 ## [0.9.0] - 2026-05-06
-### Fixed
-- All TypeScript and ESLint errors in API
+### 修复
+- API 中所有 TypeScript 和 ESLint 错误
 
 ## [0.8.0] - 2026-05-06
-### Added
-- Maestro mobile E2E test flows (login, register, CRUD, search, categories)
-- Due date overdue/due-soon indicators
-- Multi-select batch complete and delete
-- Todo export via Share API
-- Railway, Render, and EAS deployment configs
-- Performance: React.memo, FlatList optimization, React Query caching, search debounce, API retry
+### 新增
+- Maestro 移动端 E2E 测试流程（登录、注册、CRUD、搜索、分类）
+- 截止日期过期/即将到期指示器
+- 多选批量完成和删除
+- 通过 Share API 导出待办事项
+- Railway、Render 和 EAS 部署配置
+- 性能优化: React.memo、FlatList 优化、React Query 缓存、搜索防抖、API 重试
 
 ## [0.7.0] - 2026-05-06
-### Security
-- Fix postcss and @tootallnate/once vulnerabilities
+### 安全
+- 修复 postcss 和 @tootallnate/once 漏洞
 
 ## [0.6.0] - 2026-05-06
-### Added
-- Todo drag-to-reorder (API + mobile move up/down)
-- MD3 dark mode theming
-- Categories and Tags management screens
-- useCategories and useTags hook tests
+### 新增
+- 待办事项拖拽排序（API + 移动端上移/下移）
+- MD3 暗色主题
+- 分类和标签管理页面
+- useCategories 和 useTags 钩子测试
 
 ## [0.5.0] - 2026-05-06
-### Added
-- Category and Tag unit tests and E2E tests
-- GitHub Actions CI workflow
-### Fixed
-- Missing include clause in todos.service.spec.ts
+### 新增
+- 分类和标签单元测试及 E2E 测试
+- GitHub Actions CI 流水线
+### 修复
+- todos.service.spec.ts 中缺失的 include 子句
 
 ## [0.4.0] - 2026-05-06
-### Added
-- Dark mode support (initial)
-- E2E tests for todos
-- Shared schema tests
+### 新增
+- 暗色模式支持（初始版本）
+- 待办事项 E2E 测试
+- 共享 Schema 测试
 
 ## [0.3.0] - 2026-05-06
-### Added
-- Categories, Tags, Priority, Sub-tasks
-- Docker Compose infrastructure
+### 新增
+- 分类、标签、优先级、子任务
+- Docker Compose 基础设施
 
 ## [0.2.0] - 2026-05-06
-### Added
-- Basic authentication and todo CRUD
+### 新增
+- 基础认证和待办事项 CRUD
 
 ## [0.1.0] - 2026-05-06
-### Added
-- Initial project structure
+### 新增
+- 初始项目结构
