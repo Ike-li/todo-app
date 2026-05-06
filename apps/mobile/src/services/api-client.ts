@@ -1,3 +1,4 @@
+// @deprecated — This file is no longer used. The app now uses local-data.ts for offline mode.
 import { Platform } from "react-native";
 import * as SecureStore from "expo-secure-store";
 

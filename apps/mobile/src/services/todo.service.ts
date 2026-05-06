@@ -1,16 +1,14 @@
-import { apiClient } from "./api-client";
-import type {
-  TodoCreate,
-  TodoUpdate,
-  TodoResponse,
-  CategoryCreate,
-  CategoryResponse,
-  TagCreate,
-  TagResponse,
-} from "@todo-app/shared";
+import {
+  localTodos,
+  localCategories,
+  localTags,
+  type LocalTodoResponse,
+  type LocalCategoryResponse,
+  type LocalTagResponse,
+} from "./local-data";
 
 interface TodoListResponse {
-  data: TodoResponse[];
+  data: LocalTodoResponse[];
   total: number;
   page: number;
   limit: number;
@@ -19,84 +17,92 @@ interface TodoListResponse {
 // --- Todos ---
 
 export async function fetchTodos(page = 1, limit = 20): Promise<TodoListResponse> {
-  return apiClient.get<TodoListResponse>(`/todos?page=${page}&limit=${limit}`);
+  return localTodos.getAll({ page, limit });
 }
 
-export async function fetchTodo(id: string): Promise<TodoResponse> {
-  return apiClient.get<TodoResponse>(`/todos/${id}`);
+export async function fetchTodo(id: string): Promise<LocalTodoResponse> {
+  return localTodos.getById(id);
 }
 
-export async function createTodo(input: TodoCreate): Promise<TodoResponse> {
-  return apiClient.post<TodoResponse>("/todos", input);
+export async function createTodo(input: {
+  title: string;
+  description?: string;
+  priority?: string;
+  dueDate?: string | null;
+  categoryId?: string | null;
+  tags?: string[];
+}): Promise<LocalTodoResponse> {
+  return localTodos.create(input);
 }
 
 export async function updateTodo(
   id: string,
-  input: TodoUpdate
-): Promise<TodoResponse> {
-  return apiClient.patch<TodoResponse>(`/todos/${id}`, input);
+  input: {
+    title?: string;
+    description?: string | null;
+    completed?: boolean;
+    priority?: string;
+    dueDate?: string | null;
+    categoryId?: string | null;
+    tags?: string[];
+  }
+): Promise<LocalTodoResponse> {
+  return localTodos.update(id, input);
 }
 
 export async function deleteTodo(id: string): Promise<void> {
-  return apiClient.delete<void>(`/todos/${id}`);
+  return localTodos.delete(id);
 }
 
-export async function toggleTodo(id: string): Promise<TodoResponse> {
-  return apiClient.patch<TodoResponse>(`/todos/${id}/toggle`);
+export async function toggleTodo(id: string): Promise<LocalTodoResponse> {
+  return localTodos.toggle(id);
 }
 
 // --- Categories ---
 
-export async function fetchCategories(): Promise<CategoryResponse[]> {
-  return apiClient.get<CategoryResponse[]>("/categories");
+export async function fetchCategories(): Promise<LocalCategoryResponse[]> {
+  return localCategories.getAll();
 }
 
 export async function createCategory(
-  input: CategoryCreate
-): Promise<CategoryResponse> {
-  return apiClient.post<CategoryResponse>("/categories", input);
-}
-
-export async function updateCategory(
-  id: string,
-  input: Partial<CategoryCreate>
-): Promise<CategoryResponse> {
-  return apiClient.patch<CategoryResponse>(`/categories/${id}`, input);
+  input: { name: string; color?: string | null; icon?: string | null }
+): Promise<LocalCategoryResponse> {
+  return localCategories.create(input);
 }
 
 export async function deleteCategory(id: string): Promise<void> {
-  return apiClient.delete<void>(`/categories/${id}`);
+  return localCategories.delete(id);
 }
 
 // --- Sub-tasks ---
 
-export async function fetchSubTasks(todoId: string): Promise<TodoResponse[]> {
-  return apiClient.get<TodoResponse[]>(`/todos/${todoId}/subtasks`);
+export async function fetchSubTasks(parentId: string): Promise<LocalTodoResponse[]> {
+  return localTodos.getSubTasks(parentId);
 }
 
 export async function createSubTask(
   parentId: string,
-  input: Omit<TodoCreate, "parentId">
-): Promise<TodoResponse> {
-  return apiClient.post<TodoResponse>("/todos", { ...input, parentId });
+  input: { title: string; description?: string; priority?: string; dueDate?: string | null; categoryId?: string | null; tags?: string[] }
+): Promise<LocalTodoResponse> {
+  return localTodos.create({ ...input, parentId });
 }
 
 // --- Reorder ---
 
 export async function reorderTodos(items: { id: string; position: number }[]): Promise<void> {
-  return apiClient.patch<void>("/todos/reorder", { items });
+  await localTodos.reorder(items);
 }
 
 // --- Tags ---
 
-export async function fetchTags(): Promise<TagResponse[]> {
-  return apiClient.get<TagResponse[]>("/tags");
+export async function fetchTags(): Promise<LocalTagResponse[]> {
+  return localTags.getAll();
 }
 
-export async function createTag(input: TagCreate): Promise<TagResponse> {
-  return apiClient.post<TagResponse>("/tags", input);
+export async function createTag(input: { name: string }): Promise<LocalTagResponse> {
+  return localTags.create(input);
 }
 
 export async function deleteTag(id: string): Promise<void> {
-  return apiClient.delete<void>(`/tags/${id}`);
+  return localTags.delete(id);
 }
