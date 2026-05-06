@@ -21,78 +21,78 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## 说明
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Nest](https://github.com/nestjs/nest) 框架 TypeScript 入门项目。
 
-## Project setup
+## 项目安装
 
 ```bash
 $ pnpm install
 ```
 
-## Compile and run the project
+## 编译和运行项目
 
 ```bash
-# development
+# 开发模式
 $ pnpm run start
 
-# watch mode
+# 监听模式
 $ pnpm run start:dev
 
-# production mode
+# 生产模式
 $ pnpm run start:prod
 ```
 
-## Run tests
+## 运行测试
 
 ```bash
-# unit tests
+# 单元测试
 $ pnpm run test
 
-# e2e tests
+# E2E 测试
 $ pnpm run test:e2e
 
-# test coverage
+# 测试覆盖率
 $ pnpm run test:cov
 ```
 
-## Deployment
+## 部署
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+当您准备好将 NestJS 应用部署到生产环境时，可以采取一些关键步骤确保高效运行。详情请查看 [部署文档](https://docs.nestjs.com/deployment)。
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+如果您正在寻找云平台部署 NestJS 应用，请查看 [Mau](https://mau.nestjs.com)——我们官方的 AWS 部署平台。Mau 让部署变得简单快速，只需几个简单步骤：
 
 ```bash
 $ pnpm install -g @nestjs/mau
 $ mau deploy
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+通过 Mau，您只需几次点击即可部署应用，专注于构建功能而非管理基础设施。
 
-## Resources
+## 资源
 
-Check out a few resources that may come in handy when working with NestJS:
+以下资源在使用 NestJS 时可能对您有帮助：
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- 访问 [NestJS 文档](https://docs.nestjs.com) 了解更多框架信息。
+- 如有问题和寻求支持，请访问我们的 [Discord 频道](https://discord.gg/G7Qnnhy)。
+- 深入学习和获取更多实践经验，请查看我们的官方视频 [课程](https://courses.nestjs.com/)。
+- 通过 [NestJS Mau](https://mau.nestjs.com) 几次点击即可将应用部署到 AWS。
+- 使用 [NestJS Devtools](https://devtools.nestjs.com) 可视化应用图谱并与 NestJS 应用实时交互。
+- 需要项目帮助（兼职到全职）？请查看我们的官方 [企业支持](https://enterprise.nestjs.com)。
+- 了解最新动态和更新，请在 [X](https://x.com/nestframework) 和 [LinkedIn](https://linkedin.com/company/nestjs) 上关注我们。
+- 正在找工作或有职位提供？请查看我们的官方 [招聘板](https://jobs.nestjs.com)。
 
-## Support
+## 支持
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Nest 是一个 MIT 许可的开源项目。它的发展得益于赞助商和优秀支持者的帮助。如果您想加入他们，请 [了解更多](https://docs.nestjs.com/support)。
 
-## Stay in touch
+## 联系方式
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
+- 作者 - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
+- 官网 - [https://nestjs.com](https://nestjs.com/)
 - Twitter - [@nestframework](https://twitter.com/nestframework)
 
-## License
+## 许可证
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Nest 使用 [MIT 许可证](https://github.com/nestjs/nest/blob/master/LICENSE)。
