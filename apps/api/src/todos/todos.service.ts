@@ -157,6 +157,11 @@ export class TodosService {
 
     const { tags, dueDate, categoryId, parentId, ...rest } = dto;
 
+    // Prevent self-referencing parent
+    if (parentId !== undefined && parentId === id) {
+      throw new ForbiddenException('A todo cannot be its own parent');
+    }
+
     // If tags are provided, replace all existing tags
     if (tags !== undefined) {
       // Delete existing tag relations
@@ -199,18 +204,25 @@ export class TodosService {
   }
 
   async toggle(userId: string, id: string): Promise<TodoResponseDto> {
-    const todo = await this.findOne(userId, id);
+    // Permission check only (don't use the completed value for the update)
+    await this.findOne(userId, id);
 
-    const updated = await this.prisma.todo.update({
+    // Atomic toggle using raw SQL to prevent race conditions
+    await this.prisma.$executeRaw`
+      UPDATE todos SET completed = NOT completed, updated_at = NOW()
+      WHERE id = ${id}::uuid AND user_id = ${userId}
+    `;
+
+    // Fetch the updated result with relations
+    const updated = await this.prisma.todo.findUnique({
       where: { id },
-      data: { completed: !todo.completed },
       include: {
         category: true,
         tags: { include: { tag: true } },
       },
     });
 
-    return this.toResponseDto(updated);
+    return this.toResponseDto(updated!);
   }
 
   async remove(userId: string, id: string): Promise<Todo> {
@@ -225,15 +237,29 @@ export class TodosService {
     userId: string,
     dto: ReorderTodosDto,
   ): Promise<TodoResponseDto[]> {
+    // Validate all items exist and belong to the user
+    const ids = dto.items.map((item) => item.id);
+    const todos = await this.prisma.todo.findMany({
+      where: { id: { in: ids }, userId },
+    });
+
+    if (todos.length !== ids.length) {
+      const foundIds = new Set(todos.map((t) => t.id));
+      const missingIds = ids.filter((id) => !foundIds.has(id));
+      throw new NotFoundException(
+        `Todos not found or not accessible: ${missingIds.join(', ')}`,
+      );
+    }
+
     const updatePromises = dto.items.map((item) =>
       this.prisma.todo.update({
-        where: { id: item.id, userId },
+        where: { id: item.id },
         data: { position: item.position },
       }),
     );
 
-    const todos = await this.prisma.$transaction(updatePromises);
-    return todos.map((todo) => this.toResponseDto(todo));
+    const updated = await this.prisma.$transaction(updatePromises);
+    return updated.map((todo) => this.toResponseDto(todo));
   }
 
   /**

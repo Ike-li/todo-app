@@ -251,6 +251,15 @@ describe('TodosService', () => {
       expect(result.title).toBe(dto.title);
     });
 
+    it('should throw when setting parentId to self', async () => {
+      const dto: UpdateTodoDto = { parentId: 'todo-1' };
+      prisma.todo.findUnique.mockResolvedValue(mockTodo);
+
+      await expect(service.update(userId, 'todo-1', dto)).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+
     it('should replace tags on update', async () => {
       const dto: UpdateTodoDto = { tags: ['new-tag'] };
 
@@ -270,39 +279,26 @@ describe('TodosService', () => {
 
   describe('toggle', () => {
     it('should flip the completed status', async () => {
-      prisma.todo.findUnique.mockResolvedValue(mockTodo); // completed = false
-      prisma.todo.update.mockResolvedValue({ ...mockTodo, completed: true });
+      prisma.todo.findUnique
+        .mockResolvedValueOnce(mockTodo) // permission check - completed = false
+        .mockResolvedValueOnce({ ...mockTodo, completed: true }); // fetch updated result
+      prisma.$executeRaw.mockResolvedValue(1);
 
       const result = await service.toggle(userId, 'todo-1');
 
-      expect(prisma.todo.update).toHaveBeenCalledWith({
-        where: { id: 'todo-1' },
-        data: { completed: true },
-        include: {
-          category: true,
-          tags: { include: { tag: true } },
-        },
-      });
+      expect(prisma.$executeRaw).toHaveBeenCalled();
       expect(result.completed).toBe(true);
     });
 
     it('should flip completed from true to false', async () => {
-      prisma.todo.findUnique.mockResolvedValue({
-        ...mockTodo,
-        completed: true,
-      });
-      prisma.todo.update.mockResolvedValue({ ...mockTodo, completed: false });
+      prisma.todo.findUnique
+        .mockResolvedValueOnce({ ...mockTodo, completed: true }) // permission check
+        .mockResolvedValueOnce({ ...mockTodo, completed: false }); // fetch updated result
+      prisma.$executeRaw.mockResolvedValue(1);
 
       const result = await service.toggle(userId, 'todo-1');
 
-      expect(prisma.todo.update).toHaveBeenCalledWith({
-        where: { id: 'todo-1' },
-        data: { completed: false },
-        include: {
-          category: true,
-          tags: { include: { tag: true } },
-        },
-      });
+      expect(prisma.$executeRaw).toHaveBeenCalled();
       expect(result.completed).toBe(false);
     });
   });
@@ -355,7 +351,7 @@ describe('TodosService', () => {
   });
 
   describe('reorder', () => {
-    it('should update positions in a transaction', async () => {
+    it('should reorder todos in a transaction', async () => {
       const dto: ReorderTodosDto = {
         items: [
           { id: 'todo-1', position: 0 },
@@ -368,6 +364,7 @@ describe('TodosService', () => {
         { ...mockTodo, id: 'todo-2', position: 1 },
       ];
 
+      prisma.todo.findMany.mockResolvedValue(updatedTodos);
       prisma.todo.update
         .mockResolvedValueOnce(updatedTodos[0])
         .mockResolvedValueOnce(updatedTodos[1]);
@@ -377,16 +374,34 @@ describe('TodosService', () => {
 
       const result = await service.reorder(userId, dto);
 
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: { id: { in: ['todo-1', 'todo-2'] }, userId },
+      });
       expect(prisma.$transaction).toHaveBeenCalled();
       expect(prisma.todo.update).toHaveBeenCalledWith({
-        where: { id: 'todo-1', userId },
+        where: { id: 'todo-1' },
         data: { position: 0 },
       });
       expect(prisma.todo.update).toHaveBeenCalledWith({
-        where: { id: 'todo-2', userId },
+        where: { id: 'todo-2' },
         data: { position: 1 },
       });
       expect(result).toHaveLength(2);
+    });
+
+    it('should throw NotFoundException for invalid todo ids', async () => {
+      const dto: ReorderTodosDto = {
+        items: [
+          { id: 'todo-1', position: 0 },
+          { id: 'nonexistent', position: 1 },
+        ],
+      };
+
+      prisma.todo.findMany.mockResolvedValue([mockTodo]); // only found 1 of 2
+
+      await expect(service.reorder(userId, dto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

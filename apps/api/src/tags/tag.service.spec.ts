@@ -124,5 +124,12 @@ describe('TagService', () => {
         NotFoundException,
       );
     });
+
+    it('should throw ConflictException if tag is in use', async () => {
+      prisma.tag.findUnique.mockResolvedValue(mockTag);
+      prisma.tagsOnTodos.count.mockResolvedValue(3);
+
+      await expect(service.remove('tag-1')).rejects.toThrow(ConflictException);
+    });
   });
 });

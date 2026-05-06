@@ -47,6 +47,17 @@ export class TagService {
   async remove(id: string) {
     await this.findOne(id);
 
+    // Check if tag is in use
+    const usageCount = await this.prisma.tagsOnTodos.count({
+      where: { tagId: id },
+    });
+
+    if (usageCount > 0) {
+      throw new ConflictException(
+        `Tag is still attached to ${usageCount} todo(s). Remove the tag from all todos before deleting.`,
+      );
+    }
+
     return this.prisma.tag.delete({
       where: { id },
     });
