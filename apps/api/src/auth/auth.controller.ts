@@ -8,7 +8,6 @@ import {
   UnauthorizedException,
   HttpCode,
 } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
 import {
   ApiTags,
   ApiOperation,
@@ -25,7 +24,6 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({
@@ -39,7 +37,6 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('login')
   @HttpCode(200)
   @ApiOperation({ summary: 'Login with email and password' })

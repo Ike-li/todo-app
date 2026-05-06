@@ -78,6 +78,23 @@ curl -Ls "https://get.mobile.dev/install" | bash
 pnpm test:mobile-e2e
 ```
 
+## API Smoke Tests
+
+The project includes Python-based API smoke tests that verify the full request chain
+(auth → CRUD → cleanup) against a running API and database.
+
+```bash
+# Start PostgreSQL and API first
+docker compose up -d postgres
+pnpm db:migrate
+pnpm --filter api build
+DATABASE_URL="postgresql://todo_user:todo_password@localhost:5432/todo_dev" JWT_SECRET="dev-secret" node apps/api/dist/src/main.js &
+
+# Run smoke tests
+pip install -r tests/requirements.txt
+pnpm test:smoke
+```
+
 ## Deployment
 
 ### API (Railway)

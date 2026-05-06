@@ -1,7 +1,7 @@
 import pytest
 import allure
 from api.endpoints import TODOS
-from utils.generators import random_title
+from utils.generators import random_title, random_name
 
 
 @pytest.fixture
@@ -33,10 +33,15 @@ def sample_todo_with_category(authed, sample_category) -> dict:
 
 @pytest.fixture
 def sample_todo_with_tags(authed) -> dict:
-    """Create a todo with tags."""
+    """Create a todo with unique tags."""
+    tag_a = random_name("tag").lower()
+    tag_b = random_name("tag").lower()
     resp = authed.post(TODOS, json={
         "title": random_title(),
-        "tags": ["test-tag-a", "test-tag-b"],
+        "tags": [tag_a, tag_b],
     })
     assert resp.status_code == 201
-    yield resp.json()
+    todo = resp.json()
+    # Store tag names for test assertions
+    todo["_tag_names"] = [tag_a, tag_b]
+    yield todo

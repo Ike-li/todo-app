@@ -9,6 +9,7 @@
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "test:mobile-e2e": "maestro test .maestro/",
+    "test:smoke": "cd tests && python3 -m pytest test_cases/test_smoke.py -v",
     "lint": "turbo run lint",
     "db:migrate": "pnpm --filter @todo-app/api exec prisma migrate dev",
     "db:seed": "pnpm --filter @todo-app/api exec prisma db seed",

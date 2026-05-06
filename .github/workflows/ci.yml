@@ -81,6 +81,77 @@ jobs:
       - name: E2E tests
         run: pnpm test:e2e
 
+  api-smoke-tests:
+    runs-on: ubuntu-latest
+    needs: ci
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: todo_user
+          POSTGRES_PASSWORD: todo_password
+          POSTGRES_DB: todo_dev
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://todo_user:todo_password@localhost:5432/todo_dev
+      JWT_SECRET: ci-test-jwt-secret
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prisma generate
+        run: pnpm --filter api exec prisma generate
+
+      - name: Run migrations
+        run: pnpm --filter api exec prisma migrate deploy
+
+      - name: Build API
+        run: pnpm --filter api build
+
+      - name: Start API
+        run: |
+          cd apps/api && node dist/src/main.js &
+          sleep 5
+          curl -s http://localhost:3000/ || exit 1
+
+      - name: Install Python test dependencies
+        run: pip install -r tests/requirements.txt
+
+      - name: Run smoke tests
+        run: |
+          cd tests
+          python -m pytest test_cases/test_smoke.py -v --tb=short
+
+      - name: Stop API
+        if: always()
+        run: kill $(lsof -ti:3000) 2>/dev/null || true
+
   # Mobile E2E tests using Maestro
   # To run locally: brew install maestro && maestro test .maestro/
   # Requires a running iOS Simulator or Android Emulator with the app installed,

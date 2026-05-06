@@ -210,7 +210,7 @@ export class TodosService {
     // Atomic toggle using raw SQL to prevent race conditions
     await this.prisma.$executeRaw`
       UPDATE todos SET completed = NOT completed, updated_at = NOW()
-      WHERE id = ${id}::uuid AND user_id = ${userId}
+      WHERE id = ${id} AND user_id = ${userId}
     `;
 
     // Fetch the updated result with relations
